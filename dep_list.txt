@@ -1,0 +1,5 @@
+virtualenv
+apptainer
+docker
+pyenv
+rustc
