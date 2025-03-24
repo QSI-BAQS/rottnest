@@ -1,6 +1,6 @@
 Grid Synth,curl,https://gitlab.haskell.org/haskell/ghcup/raw/master/ghcup,gridsynth.sh,/tmp/ghcup
 Pandora,git,https://github.com/Alan-Robertson/pandora.git,pandora.sh,pandora
-Graph State Generation,git,https://github.com/Alan-Robertson/gosc-graph-state-generation.git,gosc.sh,goscgraph
+Graph State Generation,git,https://github.com/Alan-Robertson/gosc-graph-state-generation.git,gosc.sh,gosc-graph-state-generation
 Cabaliser,git,https://github.com/Alan-Robertson/cabaliser_dev.git,cabaliser.sh,cabaliser
 TScheduler,git,https://github.com/Alan-Robertson/t_scheduler_dev.git,tscheduler.sh,tscheduler
 Rottnest Py,git,https://github.com/Alan-Robertson/rottnest_py.git,rottnestpy.sh,rottnestpy
