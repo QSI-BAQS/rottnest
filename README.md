@@ -12,6 +12,10 @@ Ahh yes! Dependencies for the meta-packaging system. That is what we need!
 * docker
 * pyenv
 * rustc
+* gcc
+
+This does not cover the dependencies that are part of the rest of the suite, please look at the individual projects and their dependencies
+
 
 ## How to run
 
@@ -20,5 +24,5 @@ the project
 
 Example:
 ```sh
-bash install.sh ./build
+bash install.sh
 ```
