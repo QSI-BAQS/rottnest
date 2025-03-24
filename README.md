@@ -26,3 +26,14 @@ Example:
 ```sh
 bash install.sh
 ```
+
+
+## Running the projects
+
+You can choose to use `run.sh` or you can individually run the following commands:
+
+1. (Pandora) `bash run_apptainer.sh main.py default_config fh 10`, database gets started and is accessible
+
+2. (RottnestPy) `python src/rottnest/server/server.py`, runs the backend server to serve data and process it
+
+3. (Rottnest) `npm dev run`, will run the frontend and allow the user to interact with it 
