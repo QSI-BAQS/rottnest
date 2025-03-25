@@ -13,10 +13,13 @@ check_deps() {
   RETRES=0
   while IFS= read -r line; do
     local DEPCMD=$line
-    DEPRES=$(command -v $DEPCMD > /dev/null 2>&1)
+    command -v $DEPCMD > /dev/null 2>&1
+    DEPRES=$?
     if test $DEPRES -ne 0; then
       echo "Missing $DEPCMD, required for installation"
       RETRES=1
+    else
+      echo "$DEPCMD found"
     fi
     
   done < dep_list.txt
@@ -34,10 +37,12 @@ process_dep_cmd() {
 
     git )
       git clone $URLARG $BUILDDIR/$EXTARG
+      bash scripts/$SCRIPT $BUILDDIR
     ;;
 
     curl )
       curl $URLARG > $EXTARG
+      bash scripts/$SCRIPT $BUILDDIR
     ;;
 
     *)
@@ -47,7 +52,8 @@ process_dep_cmd() {
 }
 
 # Checks the command dependencies
-CAN_INSTALL=$(check_deps)
+check_deps
+CAN_INSTALL=$?
 
 if test $CAN_INSTALL -ne 0; then
   echo "Unable to install rottnest, missing commands/dependencies required"
@@ -55,6 +61,8 @@ if test $CAN_INSTALL -ne 0; then
 fi
 
 # Sets up pyenv
+echo "Activating venv"
+source $BUILDDIR/venv/bin/activate
 echo "Installing python 3.11 with pyenv"
 pyenv install 3.11
 eval "$(pyenv init -)"
@@ -64,8 +72,6 @@ pyenv global 3.11
 echo "Setting up virtual environment in $BUILDDIR/venv"
 virtualenv $BUILDDIR/venv
 
-echo "Activating venv"
-source $BUILDDIR/venv/bin/activate
 
 
 # Reads in the csv file which has a list of dependencies and what-not to
@@ -78,7 +84,10 @@ while IFS= read -r line; do
   ESCRIPT=$(echo $line | cut -d',' -f4)
   EXTRARG=$(echo $line | cut -d',' -f5)
 
-  PROCRES=$(process_dep_cmd "$CMDKIND" "$REPOURL" "$EXTRARG" "ESCRIPT")
+  process_dep_cmd "$CMDKIND" "$REPOURL" "$EXTRARG" "$ESCRIPT"
+  #echo "process_dep_cmd $CMDKIND $REPOURL $EXTRARG $ESCRIPT"
+  #sleep 1
+  PROCRES=$?
 
   if test $PROCRES -ne 0; then
     echo "Aborting"

@@ -2,8 +2,9 @@
 
 BUILDDIR=$1
 cd $BUILDDIR/rottnest
-RESRET=$(npm i)
+npm i
 
+RESRET=$?
 if test $RESRET -ne 0; then
   echo 'Building rottnest failed'
   exit 1
