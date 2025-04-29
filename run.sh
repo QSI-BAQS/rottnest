@@ -8,7 +8,9 @@ RED='\033[0;31m'
 NC='\033[0m' # [Base term color?]
 
 # Store base dir
+
 BASE_DIR=$(pwd)
+BUILDDIR=$BASE_DIR/build
 PIDS=()
 SERVICE_NAMES=()
 
