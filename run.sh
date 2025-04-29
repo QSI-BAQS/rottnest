@@ -12,6 +12,11 @@ BASE_DIR=$(pwd)
 PIDS=()
 SERVICE_NAMES=()
 
+# Ensure we have correct environment for python
+source $BUILDDIR/venv/bin/activate
+eval "$(pyenv init -)"
+pyenv global 3.11
+
 # Boxes and colors please!
 echo -e "\n${BLUE}┌──────────────────────────────────────┐${NC}"
 echo -e "${BLUE}│        ROTTNEST DEV LAUNCHER         │${NC}"
