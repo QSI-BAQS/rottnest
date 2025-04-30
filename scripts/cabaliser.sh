@@ -13,8 +13,6 @@ RESRET=$?
 if test $RESRET -ne 0; then
   echo 'Building cabaliser-lib failed'
   exit 1
-else
-  exit 0
 fi
 
 cd ..
@@ -24,8 +22,6 @@ RESRET=$?
 if test $RESRET -ne 0; then
   echo 'Building cabaliser-python api failed'
   exit 1
-else
-  exit 0
 fi
 
 
