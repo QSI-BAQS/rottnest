@@ -183,7 +183,7 @@ process_deps()
         	return 1
     	fi
 
-    	log_message "INFO" "Processing dependencies from install_list.csv"
+    	log_message "INFO" "Processing dependencies from install_list.csv\n"
 
     	local dep_count=0
     	local success_count=0
@@ -209,7 +209,7 @@ process_deps()
             		return 1
         	else
             		success_count=$((success_count + 1))
-            		log_message "SUCCESS" "Successfully installed: $DEPNAME"
+            		log_message "SUCCESS" "Successfully installed: $DEPNAME\n"
         	fi
 
     	done < install_list.csv
@@ -233,6 +233,12 @@ main()
     	log_message "INFO" "Build directory: $BUILDDIR"
     	log_message "INFO" "Log file: $LOG_FILE"
 	log_message "INFO" "Please run 'tail -f install.log' to see progress"
+
+	if [ -d "$BUILDDIR/pandora" ]; then
+		log_message "ERROR" "Past builds found"
+		log_message "INFO" "Please run clean.sh before continuing"
+		return 1
+	fi
 
     	# Step 1: Check dependencies
     	echo -e "\n${BLUE}Step 1: Checking dependencies${NC}"
