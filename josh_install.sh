@@ -155,14 +155,18 @@ setup_python_env()
         	return 1
     	fi
 
-    	log_message "INFO" "Installing Python 3.11 with pyenv"
-	log_message "INFO" "This could take some time ..."
+    	# Added this check as install was freezing at a y/n prompt.
+	if pyenv versions --bare 2>&1 | grep "3.11"; then
+		log_message "INFO" "Python 3.11 already installed."
+	else
+		log_message "INFO" "Installing Python 3.11"
 
-    	pyenv install 3.11 >> "$LOG_FILE" 2>&1
-    	if [ $? -ne 0 ]; then
-        	log_message "ERROR" "Failed to install Python 3.11"
-        	return 1
-    	fi
+		pyenv install 3.11 >> "$LOG_FILE" 2>&1
+    		if [ $? -ne 0 ]; then
+        		log_message "ERROR" "Failed to install Python 3.11"
+        		return 1
+    		fi
+	fi
 
     	eval "$(pyenv init -)"
     	pyenv global 3.11
@@ -228,6 +232,7 @@ main()
     	log_message "INFO" "Starting installation process for rottnest"
     	log_message "INFO" "Build directory: $BUILDDIR"
     	log_message "INFO" "Log file: $LOG_FILE"
+	log_message "INFO" "Please run 'tail -f install.log' to see progress"
 
     	# Step 1: Check dependencies
     	echo -e "\n${BLUE}Step 1: Checking dependencies${NC}"
@@ -253,7 +258,7 @@ main()
 
     	# Step 3: Process dependencies
     	echo -e "\n${BLUE}Step 3: Installing project dependencies${NC}"
-    	process_dependencies
+    	process_deps
     	if [ $? -ne 0 ]; then
         	log_message "ERROR" "Failed to process dependencies"
         	echo -e "\n${RED}Installation failed. Check $LOG_FILE for details.${NC}\n"
