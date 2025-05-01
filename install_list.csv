@@ -1,7 +1,7 @@
 Grid Synth,curl,https://gitlab.haskell.org/haskell/ghcup/raw/master/ghcup,gridsynth.sh,/tmp/ghcup
-Pandora,git,git@github.com:quollnest/pandora.git,pandora.sh,pandora
-Graph State Generation,git,git@github.com:quollnest/gosc-graph-state-generation.git,gosc.sh,gosc-graph-state-generation
-Cabaliser,git,git@github.com:quollnest/cabaliser.git,cabaliser.sh,cabaliser
-TScheduler,git,git@github.com:quollnest/tscheduler_py.git,tscheduler.sh,tscheduler
-Rottnest Py,git,git@github.com:quollnest/rottnestpy.git,rottnestpy.sh,rottnestpy
-Rottnest,git,git@github.com:quollnest/rottnest.git,rottnest.sh,rottnest
+Pandora,git,git@github.com:Alan-Robertson/pandora.git,pandora.sh,pandora
+Graph State Generation,git,git@github.com:Alan-Robertson/gosc-graph-state-generation.git,gosc.sh,gosc-graph-state-generation
+Cabaliser,git,git@github.com:QSI-BAQS/cabaliser.git,cabaliser.sh,cabaliser
+TScheduler,git,git@github.com:QSI-BAQS/tscheduler_py.git,t_scheduler_py.sh,t_scheduler
+Rottnest Py,git,git@github.com:QSI-BAQS/rottnest_py.git,rottnestpy.sh,rottnest_py
+Rottnest Node,git,git@github.com:QSI-BAQS/rottnest_node.git,rottnest.sh,rottnest_node

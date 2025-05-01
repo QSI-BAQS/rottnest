@@ -8,7 +8,7 @@ BUILDDIR=$1
 source $BUILDDIR/venv/bin/activate
 eval "$(pyenv init -)"
 pyenv global 3.11
-cd $BUILDDIR/rottnestpy
+cd $BUILDDIR/rottnest_py
 
 pip install -e .
 

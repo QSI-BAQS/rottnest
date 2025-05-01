@@ -1,7 +1,7 @@
 #!/bin/env
 
 BUILDDIR=$1
-cd $BUILDDIR/rottnest
+cd $BUILDDIR/rottnest_node
 npm i
 
 RESRET=$?
