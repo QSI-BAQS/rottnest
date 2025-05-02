@@ -61,10 +61,10 @@ echo -e "${BLUE}Launching development services in parallel...${NC}\n"
 launch_service "Pandora" "./build/pandora" "bash run_apptainer.sh main.py default_config fh 10"
 
 # RottnestPy
-launch_service "RottnestPy" "./build/rottnestpy" "python src/rottnest/server/server.py"
+launch_service "RottnestPy" "./build/rottnest_py" "python src/rottnest/server/server.py"
 
 # Rottnest (keep in foreground for better Ctrl+C handling)
-launch_service "Rottnest" "./build/rottnest" "npm run dev"
+launch_service "RottnestNode" "./build/rottnest_node" "npm run dev"
 
 # Summary
 echo -e "\n${BLUE}┌──────────────────────────────────────┐${NC}"
