@@ -1,60 +1,54 @@
-# Rottnest 
+# Rottnest
 
-This is a metapackage for rottnest that will attempt to download and install all
-necessary software and packages to run.
+## Installation
 
-## Dependencies for Rottnest 
+### Dependencies
 
-Ahh yes! Dependencies for the meta-packaging system. That is what we need!
+The Rottnest installer requires the following:
 
-* Python 3.11
-* GNU Make
-* gcc or clang
-* rustc
-* postgres
-* npm
-* vite
+- Python 3.11
+- pip
+- GNU Make (xCode Make might work, but is not officially supported)
+- gcc or clang
+- rustc
+- cargo
+- npm
 
-Individual repos may require their own dependencies, some repos handle installation independently, others do not.
-Here are some common dependencies.
-
-* apptainer
-* docker
-* singularity
-
-This does not cover the dependencies that are part of the rest of the suite, please look at the individual projects and their dependencies
-
-Gridsynth requires Haskell and Cabal as dependencies, this is handled within the `rottnest_py` repo.
-It is worth noting that the default behaviour is to pull and execute the Haskell compiler installation script in the user's current environment. 
-This is done to obtain the correct versions for this software:
-- GHC: 8.6.5 
-- Cabal: 2.4.1.0 
+When installing Rottnest, it will install some pip packages. The installer does not create or interact with Python virtual environments. If you wish to install the packages inside a virtual environment, please ensure the environment is activated before running the installer.
 
 
-## Building the system 
+The components also have their own runtime dependencies. Most components handle the installation of their own dependencies. However, the following must be installed independently:
 
-The system uses a `makefile` interface.
+- Apptainer
+- Docker
+- Singularity
+- postgres
+- vite
 
-Simply running `make` will attempt to clone and install all repostories in the project.
-
-- `install` : Installs all packages 
-- `test` : Runs tests in all package 
-- `update`: Updates all packages 
-- `clean`: Removes all packages
-
-In addition to this we expose per-module makefile commands:  
-
-- <reponame> : Clones and builds that sub-repository 
-- <reponame>__build : Builds and installs that sub-repository
-- <reponame>__test : Runs tests on  that sub-repository
-- <reponame>__update : Pulls and re-installs that sub-repository
-- <reponame>__clean : Cleans and uninstalls that sub-repository
+Note that Rottnest-Py automatically installs Gridsynth. This involves installing `ghc 8.6.5` and `cabal 2.4.1.0` using `ghcup`, and so requires pulling and executing the Haskell installer script in the user's current environment.
 
 
-## Running the projects
+### Running the Installer
 
-1. (Pandora) `bash run_apptainer.sh main.py default_config`, database gets started and is accessible
+Rottnest's installation is handled with `make`. The Makefile provides the following targets:
 
-2. (rottnest_py) `python src/rottnest/server/server.py`, runs the backend server to serve data and process it
+- `install` : the default, fetches and installs all components
+- `fetch` : fetches components without installing them
+- `build` : builds and installs components without fetching them
+- `clean` : uninstalls all components
+- `delete` : uninstalls all components, and removes the files from the system
+- `test` : runs tests for all components (requires that they have already been installed)
+- `update` : updates all components to their latest versions
+- `snapshot` : saves the current versions of all components to `./rottnest_snapshot`, overwriting the previous snapshot if there is one
+- `load-snapshot` : loads the component versions specified by `./rottnest_snapshot`, may require running `fetch` first
 
-3. (rottnest_js) `npm dev run`, will run the frontend and allow the user to interact with it 
+For most situations, running
+```
+$> make install
+```
+will be sufficient.
+
+
+## Running the Components
+
+<TODO>
