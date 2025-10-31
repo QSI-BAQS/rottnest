@@ -30,25 +30,66 @@ Note that Rottnest-Py automatically installs Gridsynth. This involves installing
 
 ### Running the Installer
 
-Rottnest's installation is handled with `make`. The Makefile provides the following targets:
+To install Rottnest for the first time, use;
+```
+make install
+```
+This will download all components, then build and install those components.
 
-- `install` : the default, fetches and installs all components
-- `fetch` : fetches components without installing them
-- `build` : builds and installs components without fetching them
+
+To update an already installed version of Rottnest;
+```
+make update
+```
+
+Before an update, you may wish to run;
+```
+make snapshot
+```
+to ensure you are able to rollback to the previous version if the update breaks something.
+
+To restore a saved snapshot, use;
+```
+make load-snapshot
+```
+Note that this requires having already run at least `make fetch`.
+
+
+The full set of supported commands are;
+- `install` : delegates to `fetch` and then `build`
+- `fetch` : downloads all components (does not update already downloaded components)
+- `build` : builds and installs all components
+- `update` : has each component update itself (fetch changes and install with those changes)
 - `clean` : uninstalls all components
-- `delete` : uninstalls all components, and removes the files from the system
-- `test` : runs tests for all components (requires that they have already been installed)
-- `update` : updates all components to their latest versions
-- `snapshot` : saves the current versions of all components to `./rottnest_snapshot`, overwriting the previous snapshot if there is one
-- `load-snapshot` : loads the component versions specified by `./rottnest_snapshot`, may require running `fetch` first
-
-For most situations, running
-```
-$> make install
-```
-will be sufficient.
+- `delete` : uninstalls all components, AND deletes all source files
+- `test` : runs the Rottnest test suite
+- `snapshot` : saves the current state of all installed components to `./rottnest_snapshot`, overwriting it if it already exists
+- `load-snapshot` : loads the versions of the components specified by `./rottnest_snapshot`, uninstalling the current components and reinstalling from the snapshotted versions
+- `reset-snapshot` : exits a snapshotted version, allowing typical updates to work again
 
 
-## Running the Components
+## Running Rottnest
 
 <TODO>
+
+
+## For Developers
+
+Internally, the installer uses a series of templated Makefile targets to build, install, etc. components.
+
+These targets often delegate to a per-component Makefile, meaning that all they have to do is call `${MAKE} -C <component directory> <recursive target>`.
+
+The list of components is loaded from the files in `repolist`, which provide the names of the repositories to fetch components from (separated by spaces or newlines), organised into categories.
+
+Adding a new component that;
+1. Is internal (comes from the QSI-BAQS organisation)
+2. Has its own Makefile implementing the recursive targets (`build`, `clean`, `test`, `update`)
+
+can be done by just adding that component to one of the lists.
+
+
+To add a component that does is not internal, you will need to (at minimum) provide a new target `${EXTERNAL}/<component_name>${FETCH_SYMBOL}` which describes how to get the project.
+
+If that component does not provide a Makefile implementing the required recurisve targets, either;
+- You can create a Makefile that does implement the targets, and copy it into the directory during the `fetch`
+- Or, you can implement new targets for `${CLEAN_SYMBOL}`, `${BUILD_SYMBOL}`, `${UPDATE_SYMBOL}`, `${TEST_SYMBOL}` (matching the above target) that directly interact with the external component
