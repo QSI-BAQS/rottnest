@@ -81,15 +81,24 @@ These targets often delegate to a per-component Makefile, meaning that all they 
 
 The list of components is loaded from the files in `repolist`, which provide the names of the repositories to fetch components from (separated by spaces or newlines), organised into categories.
 
-Adding a new component that;
-1. Is internal (comes from the QSI-BAQS organisation)
-2. Has its own Makefile implementing the recursive targets (`build`, `clean`, `test`, `update`)
-
-can be done by just adding that component to one of the lists.
-
 
 To add a component that does is not internal, you will need to (at minimum) provide a new target `${EXTERNAL}/<component_name>${FETCH_SYMBOL}` which describes how to get the project.
 
-If that component does not provide a Makefile implementing the required recurisve targets, either;
-- You can create a Makefile that does implement the targets, and copy it into the directory during the `fetch`
-- Or, you can implement new targets for `${CLEAN_SYMBOL}`, `${BUILD_SYMBOL}`, `${UPDATE_SYMBOL}`, `${TEST_SYMBOL}` (matching the above target) that directly interact with the external component
+
+With each repository we consider three cases:
+### Repo implements the Makefile interface
+- Nothing needs to be done after cloning the repository.
+
+
+### Repo lacks a Makefile
+- A repo-specific Makefile should live in this repository.
+- As part of the cloning process that Makefile is then copied to the repository, satisfying the Makefile interface. 
+- To satisfy this dependency the copied Makefile must implement `${CLEAN_SYMBOL}`, `${BUILD_SYMBOL}`, `${UPDATE_SYMBOL}`, `${TEST_SYMBOL}` (matching the above target) that directly interact with the external component
+
+
+### Repo has a Makefile that does not implement the interface
+- A repo-specific Makefile should live in this repository.
+- Symbol-specific rules should be defined in that Makefile to implement the Makefile interface. 
+That Makefile should then be `included` in the top level makefile, exposing the default rules. 
+- To satisfy this dependency the included Makefile must implement `${CLEAN_SYMBOL}`, `${BUILD_SYMBOL}`, `${UPDATE_SYMBOL}`, `${TEST_SYMBOL}` (matching the above target) that directly interact with the external component
+
