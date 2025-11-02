@@ -1,0 +1,15 @@
+.PHONY: all build clean update test
+
+all: build
+
+build:
+	pip install -e .
+
+clean:
+	pip uninstall pandora
+
+update:
+	git pull origin
+
+test:
+	pytest

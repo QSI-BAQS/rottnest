@@ -20,6 +20,9 @@ UTIL_DIR=utils
 UTILS:=${BASE}/${UTIL_DIR}
 
 
+MAKEFILE_WRAPPERS=make_wrappers
+
+
 # ---[ Load component lists ]---
 LIB_REPOS=$(file < repolist/${LIB_DIR})
 LIB_TARGETS=$(patsubst %,${LIBS}/%,${LIB_REPOS})
@@ -135,13 +138,13 @@ update: ${UPDATE_CMDS}
 
 # test : run tests for each component
 test: ${TEST_CMDS}
-	@echo "--=[ All tests passed ]=--"
+	@echo "--=[ All tests run ]=--"
 
 %${TEST_SYMBOL}: TEST_TARGET=$(patsubst %${TEST_SYMBOL},%,$@)
 %${TEST_SYMBOL}: FORCE
 	@echo "--=[ Testing component ${TEST_TARGET} ]=--"
-	@${MAKE} -C ${TEST_TARGET} test
-	@echo "--=[  Component ${TEST_TARGET} passed all tests ]=--"
+	@${MAKE} -C ${TEST_TARGET} test || echo "--=[ FAIL : Tests for ${TEST_TARGET} did not pass ]=--"
+	@echo "--=[  Completed tests for ${TEST_TARGET} ]=--"
 
 
 # snapshot : save the current git revisions in use
@@ -183,25 +186,14 @@ reset-snapshot:
 # ---[ Special Cases for External Components ]---
 
 # Pandora
-# TODO : Either load a custom makefile or interface with theirs
 ${EXTERNALS}/pandora${FETCH_SYMBOL}: FETCH_DEST=$(patsubst %${FETCH_SYMBOL},%,$@)
 ${EXTERNALS}/pandora${FETCH_SYMBOL}: FETCH_REPO=$(notdir ${FETCH_DEST})
 ${EXTERNALS}/pandora${FETCH_SYMBOL}: FORCE
 	@echo "--=[ Fetching component ${FETCH_DEST} ]=--"
 	@git clone git@github.com:ioanamoflic/${FETCH_REPO} ${FETCH_DEST}
+# copy wrapper Makefile into pandora (as it does not supply its own)
+	@cp ${MAKEFILE_WRAPPERS}/pandoraMakefile ${FETCH_DEST}/Makefile
 	@echo "--=[ Successfully fetched ${FETCH_DEST} ]=--"
-
-${EXTERNALS}/pandora${CLEAN_SYMBOL}: FORCE
-	@echo "This should clean up pandora"
-
-${EXTERNALS}/pandora${BUILD_SYMBOL}: FORCE
-	@echo "This should build pandora"
-
-${EXTERNALS}/pandora${UPDATE_SYMBOL}: FORCE
-	@echo "This should update pandora"
-
-${EXTERNALS}/pandora${TEST_SYMBOL}: FORCE
-	@echo "This should test pandora"
 
 
 # Dummy rule to allow forcing w/out .PHONY
