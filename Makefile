@@ -164,7 +164,7 @@ else
 	@STATES="$(patsubst %,%,$(file <rottnest_snapshot))"; \
 		for target_state in $$STATES; do \
 			read DIR REV <<<$${target_state//@/\ }; \
-			$$(cd "$$DIR" && git checkout "$$REV"); \
+			echo $$(cd "$$DIR" && git checkout "$$REV"); \
 		done
 	@echo "--=[ Loaded snapshot state ]=--"
 	@echo "--=[ Uninstalling and reinstalling from snapshot ]=--"
@@ -177,7 +177,7 @@ endif
 # reset-snapshot : exits snapshot state (so that repos can be updated normally again)
 reset-snapshot:
 	@echo "--=[ Leaving snapshot state ]=--"
-	@for target in ${ALL_TARGETS}; do $$(cd $${target} && git checkout -); done
+	@for target in ${ALL_TARGETS}; do echo $$(cd $${target} && git checkout -); done
 	@echo "--=[ Successfully returned to latest ]=--"
 
 
