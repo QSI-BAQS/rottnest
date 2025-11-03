@@ -1,0 +1,30 @@
+IMG_DIR=images
+APP_NAME=pandora
+
+
+.PHONY: all build clean update test apptainer_build apptainer_base
+
+all: build apptainer_build
+
+build: apptainer_build
+	pip install -e .
+
+clean:
+	pip uninstall -y ${APP_NAME}
+
+update:
+	git pull origin
+
+test:
+	pytest
+
+apptainer_build: apptainer_base
+	cd apptainer;
+		mkdir -p "${IMG_DIR}"; \
+		singularity build "${IMG_DIR}/pandora.sif" docker-daemon://local/${APP_NAME}:latest
+
+apptainer_base:
+	cd apptainer; \
+		mkdir -p "${IMG_DIR}"; \
+		docker build -t local/${APP_NAME}:latest .
+
