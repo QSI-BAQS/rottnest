@@ -81,24 +81,25 @@ These targets often delegate to a per-component Makefile, meaning that all they 
 
 The list of components is loaded from the files in `repolist`, which provide the names of the repositories to fetch components from (separated by spaces or newlines), organised into categories.
 
-
-To add a component that does is not internal, you will need to (at minimum) provide a new target `${EXTERNAL}/<component_name>${FETCH_SYMBOL}` which describes how to get the project.
-
-
-With each repository we consider three cases:
-### Repo implements the Makefile interface
-- Nothing needs to be done after cloning the repository.
+For each component, there are two things that are required:
+- A way to acquire that component (eg. `git`)
+- A way to then build, etc. that component with our interface
 
 
-### Repo lacks a Makefile
-- A repo-specific Makefile should live in this repository.
-- As part of the cloning process that Makefile is then copied to the repository, satisfying the Makefile interface. 
-- To satisfy this dependency the copied Makefile must implement `${CLEAN_SYMBOL}`, `${BUILD_SYMBOL}`, `${UPDATE_SYMBOL}`, `${TEST_SYMBOL}` (matching the above target) that directly interact with the external component
+### Acquiring Components
+If a component is internal (such that it can be fetched via `git` from the provided `ROTTNEST_REMOTE`), then it will automatically be covered by the existing template.
+
+If a component is to be fetched from somewhere else, then a new target `${<category>}/<component name>__${FETCH_SYMBOL}` must be provided. This target should be provided in the file `external_wrappers/<component name>/include`, and will be automatically included as part of the main Makefile.
 
 
-### Repo has a Makefile that does not implement the interface
-- A repo-specific Makefile should live in this repository.
-- Symbol-specific rules should be defined in that Makefile to implement the Makefile interface. 
-That Makefile should then be `included` in the top level makefile, exposing the default rules. 
-- To satisfy this dependency the included Makefile must implement `${CLEAN_SYMBOL}`, `${BUILD_SYMBOL}`, `${UPDATE_SYMBOL}`, `${TEST_SYMBOL}` (matching the above target) that directly interact with the external component
+### Interfacing with Components
+Once a component has been fetched, our interface of `clean`, `build`, `update`, `test` must be used to manage that component. There are three main cases for a component:
 
+#### Component provides a Makefile that implements our interface
+In this case, nothing needs to be done.
+
+#### Component lacks a Makefile
+In this case, the easiest solution is to create our own Makefile for that component (that wraps whatever build system it does use in our interface), and copy that Makefile into the component's directory during the `fetch` step. The Makefile should be placed at `external_wrappers/<component name>/Makefile`, and should implement `build`, `update`, `test` and `clean`.
+
+#### Component has a Makefile that does not implement our interface
+In this case, the `include` for that component should also expose targets for `${category}/<component name>__${BUILD_SYMBOL}`, `__${UPDATE_SYMBOL}`, `__${TEST_SYMBOL}` and `__${CLEAN_SYMBOL}`. These can then manually call whatever recursive Makefile targets perform the equivalent roles in the component's Makefile.
