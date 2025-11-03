@@ -4,7 +4,7 @@ APP_NAME=pandora
 
 .PHONY: all build clean update test apptainer_build apptainer_base
 
-all: build apptainer_build
+all: build
 
 build: apptainer_build
 	pip install -e .
@@ -14,6 +14,7 @@ clean:
 
 update:
 	git pull origin
+	${MAKE} build
 
 test:
 	pytest
