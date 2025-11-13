@@ -101,20 +101,8 @@ TEST_CMDS=$(patsubst %,%${TEST_SYMBOL},${ALL_TARGETS})
 
 
 # ---[ Generic Command Targets ]---
-install: preflight-checks fetch build start-postgres
+install: preflight-checks fetch build
 	@echo "--=[ Rottnest successfully installed ]=--"
-
-# Start PostgreSQL container after build
-start-postgres:
-	@echo "--=[ Starting PostgreSQL container ]=--"
-	@docker rm -f pandora-db 2>/dev/null || true
-	@docker run -d -p 5555:5432 --name pandora-db \
-		-e POSTGRES_PASSWORD=postgres \
-		-v /home/pandora-data:/var/lib/postgresql/data \
-		local/pandora:latest >/dev/null 2>&1 && sleep 5 && \
-		echo "--=[ PostgreSQL started on port 5555 ]=--" || \
-		(echo "ERROR: PostgreSQL failed to start. Check: docker logs pandora-db" && exit 1)
-
 
 # fetch : perform the initial cloning of each component
 fetch: ${FETCH_CMDS}
