@@ -1,6 +1,6 @@
 ROTTNEST_REMOTE=git@github.com:QSI-BAQS
 
-.PHONY: all install fetch build clean delete update test snapshot load-snapshot reset-snapshot preflight-checks start-postgres
+.PHONY: all install fetch build clean delete update test snapshot load-snapshot reset-snapshot preflight-checks
 
 # Default target
 all: install
