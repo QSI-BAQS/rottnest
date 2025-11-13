@@ -114,10 +114,6 @@ start-postgres:
 		local/pandora:latest >/dev/null 2>&1 && sleep 5 && \
 		echo "--=[ PostgreSQL started on port 5555 ]=--" || \
 		(echo "ERROR: PostgreSQL failed to start. Check: docker logs pandora-db" && exit 1)
-	@if [ -f rottnest/applications/rottnest_py/pandora_pg.json ]; then \
-		if ! grep -q '"password":"postgres"' rottnest/applications/rottnest_py/pandora_pg.json; then \
-			echo "WARNING: rottnest_py/pandora_pg.json password may not match PostgreSQL"; \
-		fi;
 
 
 # fetch : perform the initial cloning of each component
