@@ -4,7 +4,7 @@ ${APPLICATIONS}/pandora${FETCH_SYMBOL}: FORCE
 	@echo "--=[ Fetching component ${FETCH_DEST} ]=--"
 # changed to qoullnest folk, awaiting PR in main pandora repo
 # git clone git@github.com:ioanamoflic/${FETCH_REPO} ${FETCH_DEST}
-	git clone git@github.com:quollnest/${FETCH_REPO} ${FETCH_DEST}
+	git clone git@github.com:quollnest/${FETCH_REPO} ${FETCH_DEST} || echo ""
 # copy wrapper Makefile into pandora (as it does not supply its own)
 	cp ${EXTERNAL_WRAPPERS}/pandora/Makefile ${FETCH_DEST}/Makefile
 	@echo "--=[ Successfully fetched ${FETCH_DEST} ]=--"

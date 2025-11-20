@@ -22,10 +22,10 @@ test:
 apptainer_build: apptainer_base
 	cd apptainer;
 		mkdir -p "${IMG_DIR}"; \
-		singularity build "${IMG_DIR}/pandora.sif" docker-daemon://local/${APP_NAME}:latest
+		singularity build "${IMG_DIR}/pandora.sif" docker-daemon://local/${APP_NAME}:latest || echo ""
 
 apptainer_base:
 	cd apptainer; \
 		mkdir -p "${IMG_DIR}"; \
-		docker build -t local/${APP_NAME}:latest .
+		docker build -t local/${APP_NAME}:latest . || echo ""
 

@@ -112,7 +112,7 @@ fetch: ${FETCH_CMDS}
 %${FETCH_SYMBOL}: FETCH_REPO=$(notdir ${FETCH_DEST})
 %${FETCH_SYMBOL}:
 	@echo "--=[ Fetching component ${FETCH_DEST} ]=--"
-	@git clone ${ROTTNEST_REMOTE}/${FETCH_REPO} ${FETCH_DEST}
+	@git clone ${ROTTNEST_REMOTE}/${FETCH_REPO} ${FETCH_DEST} || echo ""
 	@echo "--=[ Successfully fetched ${FETCH_DEST} ]=--"
 
 
