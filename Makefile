@@ -1,4 +1,5 @@
 ROTTNEST_REMOTE=git@github.com:QSI-BAQS
+SHELL := /bin/bash
 
 .PHONY: all install fetch build clean delete update test snapshot load-snapshot reset-snapshot preflight-checks
 
@@ -9,18 +10,22 @@ all: install
 # Catch errors now instead of mid build.
 preflight-checks:
 	@echo "Running preflight checks..."
-	@command -v git >/dev/null 2>&1 || (echo "ERROR: git not installed" && exit 1)
-	@command -v python3 >/dev/null 2>&1 || (echo "ERROR: python3 not installed" && exit 1)
-	@command -v pip >/dev/null 2>&1 || (echo "ERROR: pip not installed" && exit 1)
-	@command -v npm >/dev/null 2>&1 || (echo "ERROR: npm not installed (needed for rottnest_js)" && exit 1)
-	@command -v gcc >/dev/null 2>&1 || command -v clang >/dev/null 2>&1 || (echo "ERROR: gcc or clang not installed (needed for C compilation)" && exit 1)
-	@command -v cargo >/dev/null 2>&1 || (echo "ERROR: cargo/rust not installed (needed for Rust components)" && exit 1)
-	@command -v docker >/dev/null 2>&1 || (echo "ERROR: Docker not installed" && exit 1)
-	@docker info >/dev/null 2>&1 || (echo "ERROR: Docker daemon not running or no permissions (try: sudo usermod -aG docker $$USER)" && exit 1)
-	@ssh -T git@github.com 2>&1 | grep -q "successfully authenticated" || echo "WARNING: SSH key not configured for GitHub (may fail to clone repos)"
-	@df -h / | awk 'NR==2 {if ($$5+0 > 90) print "WARNING: Root filesystem >90% full (" $$5 ") - may cause build failures"}'
-	@df -h /home | awk 'NR==2 {if ($$5+0 > 90) print "WARNING: /home filesystem >90% full (" $$5 ") - may cause PostgreSQL issues"}'
-	@echo "Preflight checks complete"
+	@ERRORS=""; \
+	command -v git >/dev/null 2>&1 || ERRORS="$$ERRORS\n  - git"; \
+	command -v python3 >/dev/null 2>&1 || ERRORS="$$ERRORS\n  - python3"; \
+	command -v pip >/dev/null 2>&1 || ERRORS="$$ERRORS\n  - pip"; \
+	command -v npm >/dev/null 2>&1 || ERRORS="$$ERRORS\n  - npm (needed for rottnest_js)"; \
+	command -v gcc >/dev/null 2>&1 || command -v clang >/dev/null 2>&1 || ERRORS="$$ERRORS\n  - gcc or clang (needed for C compilation)"; \
+	command -v cargo >/dev/null 2>&1 || ERRORS="$$ERRORS\n  - cargo/rust (needed for Rust components)"; \
+	if [ -n "$$ERRORS" ]; then \
+		echo "ERROR: Missing required dependencies:"; \
+		echo "$$ERRORS" | sed '/^$$/d'; \
+		exit 1; \
+	fi; \
+	ssh -T git@github.com 2>&1 | grep -q "successfully authenticated" || echo "WARNING: SSH key not configured for GitHub (may fail to clone repos)"; \
+	df -h / | awk 'NR==2 {if ($$5+0 > 90) print "WARNING: Root filesystem >90% full (" $$5 ") - may cause build failures"}'; \
+	df -h /home | awk 'NR==2 {if ($$5+0 > 90) print "WARNING: /home filesystem >90% full (" $$5 ") - may cause PostgreSQL issues"}'; \
+	echo "Preflight checks complete"
 
 BASE=rottnest
 
