@@ -11,12 +11,12 @@ all: install
 preflight-checks:
 	@echo "Running preflight checks..."
 	@ERRORS=""; \
-	command -v git >/dev/null 2>&1 || ERRORS="$$ERRORS\n  - git"; \
-	command -v python3 >/dev/null 2>&1 || ERRORS="$$ERRORS\n  - python3"; \
-	command -v pip >/dev/null 2>&1 || ERRORS="$$ERRORS\n  - pip"; \
-	command -v npm >/dev/null 2>&1 || ERRORS="$$ERRORS\n  - npm (needed for rottnest_js)"; \
-	command -v gcc >/dev/null 2>&1 || command -v clang >/dev/null 2>&1 || ERRORS="$$ERRORS\n  - gcc or clang (needed for C compilation)"; \
-	command -v cargo >/dev/null 2>&1 || ERRORS="$$ERRORS\n  - cargo/rust (needed for Rust components)"; \
+	command -v git >/dev/null 2>&1 || ERRORS="$$ERRORS git"; \
+	command -v python3 >/dev/null 2>&1 || ERRORS="$$ERRORS python3"; \
+	command -v pip >/dev/null 2>&1 || ERRORS="$$ERRORS pip"; \
+	command -v npm >/dev/null 2>&1 || ERRORS="$$ERRORS npm"; \
+	command -v gcc >/dev/null 2>&1 || ERRORS="$$ERRORS gcc"; \
+	command -v cargo >/dev/null 2>&1 || ERRORS="$$ERRORS cargo"; \
 	if [ -n "$$ERRORS" ]; then \
 		echo "ERROR: Missing required dependencies:"; \
 		echo "$$ERRORS" | sed '/^$$/d'; \
