@@ -1,6 +1,26 @@
 ROTTNEST_REMOTE=git@github.com:QSI-BAQS
 
-.PHONY: install fetch build clean delete update test snapshot load-snapshot reset-snapshot
+.PHONY: all install fetch build clean delete update test snapshot load-snapshot reset-snapshot preflight-checks
+
+# Default target
+all: install
+
+# ---[ Preflight Checks ]---
+# Catch errors now instead of mid build.
+preflight-checks:
+	@echo "Running preflight checks..."
+	@command -v git >/dev/null 2>&1 || (echo "ERROR: git not installed" && exit 1)
+	@command -v python3 >/dev/null 2>&1 || (echo "ERROR: python3 not installed" && exit 1)
+	@command -v pip >/dev/null 2>&1 || (echo "ERROR: pip not installed" && exit 1)
+	@command -v npm >/dev/null 2>&1 || (echo "ERROR: npm not installed (needed for rottnest_js)" && exit 1)
+	@command -v gcc >/dev/null 2>&1 || command -v clang >/dev/null 2>&1 || (echo "ERROR: gcc or clang not installed (needed for C compilation)" && exit 1)
+	@command -v cargo >/dev/null 2>&1 || (echo "ERROR: cargo/rust not installed (needed for Rust components)" && exit 1)
+	@command -v docker >/dev/null 2>&1 || (echo "ERROR: Docker not installed" && exit 1)
+	@docker info >/dev/null 2>&1 || (echo "ERROR: Docker daemon not running or no permissions (try: sudo usermod -aG docker $$USER)" && exit 1)
+	@ssh -T git@github.com 2>&1 | grep -q "successfully authenticated" || echo "WARNING: SSH key not configured for GitHub (may fail to clone repos)"
+	@df -h / | awk 'NR==2 {if ($$5+0 > 90) print "WARNING: Root filesystem >90% full (" $$5 ") - may cause build failures"}'
+	@df -h /home | awk 'NR==2 {if ($$5+0 > 90) print "WARNING: /home filesystem >90% full (" $$5 ") - may cause PostgreSQL issues"}'
+	@echo "Preflight checks complete"
 
 BASE=rottnest
 
@@ -81,8 +101,8 @@ TEST_CMDS=$(patsubst %,%${TEST_SYMBOL},${ALL_TARGETS})
 
 
 # ---[ Generic Command Targets ]---
-install: fetch build
-
+install: preflight-checks fetch build
+	@echo "--=[ Rottnest successfully installed ]=--"
 
 # fetch : perform the initial cloning of each component
 fetch: ${FETCH_CMDS}
@@ -115,7 +135,6 @@ delete: clean
 
 # build : build and actually install each component
 build: ${BUILD_CMDS}
-	@echo "--=[ Rottnest successfully installed ]=--"
 
 %${BUILD_SYMBOL}: BUILD_DEST=$(patsubst %${BUILD_SYMBOL},%,$@)
 %${BUILD_SYMBOL}: FORCE
@@ -136,7 +155,7 @@ update: ${UPDATE_CMDS}
 
 
 # test : run tests for each component
-test: ${TEST_CMDS}
+test: preflight-checks ${TEST_CMDS}
 	@echo "--=[ All tests run ]=--"
 
 %${TEST_SYMBOL}: TEST_TARGET=$(patsubst %${TEST_SYMBOL},%,$@)
