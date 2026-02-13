@@ -2,17 +2,23 @@
 
 ## Installation
 
+**Any Python environment setup (eg. `venv`, `conda`, etc.) must be done BEFORE running the installer.** The installer will use `pip` - ensure you have an environment in which `pip` can successfully install packages.
+
 ### Dependencies
 
 The Rottnest installer requires the following:
 
+- curl and tar
 - Python 3.11
 - pip
-- GNU Make (xCode Make might work, but is not officially supported)
+- GNU Make v4 (note that v3, the default on Mac, will not work)
 - gcc or clang
 - rustc
 - cargo
 - npm
+- ghc and cabal
+
+TODO : ghc and cabal (maybe more?) local installers
 
 When installing Rottnest, it will install some pip packages. The installer does not create or interact with Python virtual environments. If you wish to install the packages inside a virtual environment, please ensure the environment is activated before running the installer.
 
@@ -22,13 +28,14 @@ The components also have their own runtime dependencies. Most components handle 
 - Apptainer
 - Docker
 - Singularity
-- postgres
 - vite
 
-Note that Rottnest-Py automatically installs Gridsynth. This involves installing `ghc 8.6.5` and `cabal 2.4.1.0` using `ghcup`, and so requires pulling and executing the Haskell installer script in the user's current environment.
+TODO : Status of apptainer-less pandora w/ docker
 
 
 ### Running the Installer
+
+**NOTE:** GNU Make v4 is required for the installation. For Mac users, this can be acquire via `brew install make`. The `brew` version of `make` is available as `gmake` - all use of `make` in the below commands should be replaced with `gmake` if using Homebrew on Mac.
 
 To install Rottnest for the first time, use;
 ```
@@ -70,7 +77,7 @@ The full set of supported commands are;
 
 ## Running Rottnest
 
-<TODO>
+TODO : Implement `make run`
 
 
 ## For Developers
