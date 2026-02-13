@@ -1,0 +1,6 @@
+${EXTERNALS}/newsynth_patch${FETCH_SYMBOL}: FETCH_DEST=$(patsubst %${FETCH_SYMBOL},%,$@)
+${EXTERNALS}/newsynth_patch${FETCH_SYMBOL}: FETCH_REPO=$(notdir ${FETCH_DEST})
+${EXTERNALS}/newsynth_patch${FETCH_SYMBOL}: FORCE
+	@printf "${BOLD}Fetching component ${FETCH_DEST}${END_STYLE}\n"
+	@git clone ${ROTTNEST_REMOTE}/${FETCH_REPO} ${FETCH_DEST} || (printf "${FATAL_MSG} Failed to clone newsynth patch\n" && false)
+	@printf "${SUCCESS_TEXT}Successfully fetched ${FETCH_DEST}${END_STYLE}\n\n"
