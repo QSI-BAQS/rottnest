@@ -1,31 +1,20 @@
 ROTTNEST_REMOTE=git@github.com:QSI-BAQS
-SHELL := /bin/bash
+SHELL=/bin/bash
+
+BOLD=\033[1m
+END_STYLE=\033[0m
+
+SUCCESS_TEXT:=${BOLD}\033[32m
+FAIL_TEXT:=${BOLD}\033[31m
+
+FATAL_MSG:=${FAIL_TEXT}[FATAL]${END_STYLE}
+WARN_MSG:=${BOLD}[WARN]${END_STYLE}
 
 .PHONY: all install fetch build clean delete update test snapshot load-snapshot reset-snapshot preflight-checks
 
 # Default target
 all: install
 
-# ---[ Preflight Checks ]---
-# Catch errors now instead of mid build.
-preflight-checks:
-	@echo "Running preflight checks..."
-	@ERRORS=""; \
-	command -v git >/dev/null 2>&1 || ERRORS="$$ERRORS git"; \
-	command -v python3 >/dev/null 2>&1 || ERRORS="$$ERRORS python3"; \
-	command -v pip >/dev/null 2>&1 || ERRORS="$$ERRORS pip"; \
-	command -v npm >/dev/null 2>&1 || ERRORS="$$ERRORS npm"; \
-	command -v gcc >/dev/null 2>&1 || ERRORS="$$ERRORS gcc"; \
-	command -v cargo >/dev/null 2>&1 || ERRORS="$$ERRORS cargo"; \
-	if [ -n "$$ERRORS" ]; then \
-		echo "ERROR: Missing required dependencies:"; \
-		echo "$$ERRORS" | sed '/^$$/d'; \
-		exit 1; \
-	fi; \
-	ssh -T git@github.com 2>&1 | grep -q "successfully authenticated" || echo "WARNING: SSH key not configured for GitHub (may fail to clone repos)"; \
-	df -h / | awk 'NR==2 {if ($$5+0 > 90) print "WARNING: Root filesystem >90% full (" $$5 ") - may cause build failures"}'; \
-	df -h /home | awk 'NR==2 {if ($$5+0 > 90) print "WARNING: /home filesystem >90% full (" $$5 ") - may cause PostgreSQL issues"}'; \
-	echo "Preflight checks complete"
 
 BASE=rottnest
 
@@ -83,6 +72,26 @@ ALL_REPOS:=${INTERNAL_REPOS} ${EXTERNAL_REPOS}
 ALL_TARGETS:=${INTERNAL_TARGETS} ${EXTERNAL_TARGETS}
 
 
+# Trivial "must-have" dependencies (more complex requirements
+# are handled explicitly in preflight-checks)
+COMMAND_DEPS=curl tar git python3 ghc cabal pip npm cargo docker
+CMD_CHECK_SYMBOL=__cmd_check
+COMMAND_CHECKERS=$(patsubst %,%${CMD_CHECK_SYMBOL},${COMMAND_DEPS})
+
+%${CMD_CHECK_SYMBOL}: CHECK_CMD=$(patsubst %${CMD_CHECK_SYMBOL},%,$@)
+%${CMD_CHECK_SYMBOL}:
+	@${CHECK_CMD} --version > /dev/null 2>&1 || (printf "${FATAL_MSG} Missing required command: ${CHECK_CMD}\n" && false)
+
+# ---[ Preflight Checks ]---
+# Catch errors now instead of mid build.
+preflight-checks: ${COMMAND_CHECKERS}
+	@${MAKE} --version | grep "GNU Make 4" > /dev/null 2>&1 || (printf "${FATAL_MSG} Incorrect version: ${MAKE} - $$(${MAKE} --version) (required 4.x)\n" && false)
+	@python3 --version | grep "3.11" > /dev/null 2>&1 || (printf "${FATAL_MSG} Incorrect version: python3 - $$(python3 --version) (required 3.11)\n" && false)
+	@gcc --version > /dev/null 2>&1 || clang --version > /dev/null 2>&1 || (printf "${FATAL_MSG} Missing required command: at least one of gcc or clang\n" && false)
+	@apptainer --version > /dev/null 2>&1 || (printf "${WARN_MSG} Missing suggested command: apptainer\n")
+
+
+
 # ---[ Command Generation ]---
 # Fetch the given component
 FETCH_SYMBOL=__fetch
@@ -107,28 +116,28 @@ TEST_CMDS=$(patsubst %,%${TEST_SYMBOL},${ALL_TARGETS})
 
 # ---[ Generic Command Targets ]---
 install: preflight-checks fetch build
-	@echo "--=[ Rottnest successfully installed ]=--"
+	@printf "${SUCCESS_TEXT}Successfully installed rottnest${END_STYLE}\n"
 
 # fetch : perform the initial cloning of each component
-fetch: ${FETCH_CMDS}
-	@echo "--=[ Successfully fetched Rottnest components ]=--"
+fetch: preflight-checks ${FETCH_CMDS}
+	@printf "${SUCCESS_TEXT}Successfully fetched rottnest components${END_STYLE}\n"
 
 %${FETCH_SYMBOL}: FETCH_DEST=$(patsubst %${FETCH_SYMBOL},%,$@)
 %${FETCH_SYMBOL}: FETCH_REPO=$(notdir ${FETCH_DEST})
 %${FETCH_SYMBOL}:
-	@echo "--=[ Fetching component ${FETCH_DEST} ]=--"
-	@git clone ${ROTTNEST_REMOTE}/${FETCH_REPO} ${FETCH_DEST} || echo ""
-	@echo "--=[ Successfully fetched ${FETCH_DEST} ]=--"
+	@printf "${BOLD}Fetching component ${FETCH_DEST}${END_STYLE}\n"
+	@git clone ${ROTTNEST_REMOTE}/${FETCH_REPO} ${FETCH_DEST} || (printf "${FATAL_MSG} Failed to fetch ${FETCH_DEST}\n" && false)
+	@printf "${SUCCESS_TEXT}Successfully fetched ${FETCH_DEST}${END_STYLE}\n\n"
 
 
 # clean : uninstall each component
 clean: ${CLEAN_CMDS}
-	@echo "--=[ Rottnest successfully uninstalled ]=--"
+	@printf "${SUCCESS_TEXT}Rottnest successfully uninstalled${END_STYLE}\n"
 
 %${CLEAN_SYMBOL}: CLEANING_TARGET=$(patsubst %${CLEAN_SYMBOL},%,$@)
 %${CLEAN_SYMBOL}: FORCE
-	@echo "--=[ Uninstalling component ${CLEANING_TARGET} ]=--"
-	@${MAKE} -C ${CLEANING_TARGET} clean || echo "${CLEANING_TARGET} was not installed"
+	@printf "${BOLD}Uninstalling component ${CLEANING_TARGET}${END_STYLE}\n"
+	@${MAKE} -C ${CLEANING_TARGET} clean || printf "${WARN_MSG} ${CLEANING_TARGET} was not installed\n"
 
 
 # delete : remove all components from the device
@@ -139,70 +148,68 @@ delete: clean
 
 
 # build : build and actually install each component
-build: ${BUILD_CMDS}
+# 		  to enforce any ordering, list targets explicitly
+build: preflight-checks ${EXTERNALS}/newsynth_patch${BUILD_SYMBOL} ${BUILD_CMDS}
 
 %${BUILD_SYMBOL}: BUILD_DEST=$(patsubst %${BUILD_SYMBOL},%,$@)
 %${BUILD_SYMBOL}: FORCE
-	@echo "--=[ Installing component ${BUILD_DEST} ]=--"
-	@${MAKE} -C ${BUILD_DEST} build
-	@echo "--=[ Component ${BUILD_DEST} successfully installed ]=--"
+	@printf "${BOLD}Installing component ${BUILD_DEST}${END_STYLE}\n"
+	@${MAKE} -C ${BUILD_DEST} build || (printf "${FATAL_MSG} Failed to build ${BUILD_DEST}\n" && false)
+	@printf "${SUCCESS_TEXT}Component ${BUILD_DEST} successfully installed${END_STYLE}\n\n"
 
 
 # update : delegate update to each component
-update: ${UPDATE_CMDS}
-	@echo "--=[ Rottnest sccessfully updated ]=--"
+update: preflight-checks ${UPDATE_CMDS}
 
 %${UPDATE_SYMBOL}: UPDATE_TARGET=$(patsubst %${UPDATE_SYMBOL},%,$@)
 %${UPDATE_SYMBOL}: FORCE
-	@echo "--=[ Updating component ${UPDATE_TARGET} ]=--"
-	@${MAKE} -C ${UPDATE_TARGET} update
-	@echo "--=[ Component ${UPDATE_TARGET} successfully updated ]=--"
+	@printf "${BOLD}Updating component ${UPDATE_TARGET}${END_STYLE}\n"
+	@${MAKE} -C ${UPDATE_TARGET} update || (printf "${FATAL_MSG} Failed to update ${UPDATE_TARGET}\n" && false)
+	@printf "${SUCCESS_TEXT}Component ${UPDATE_TARGET} successfully updated${END_STYLE}\n\n"
 
 
 # test : run tests for each component
 test: preflight-checks ${TEST_CMDS}
-	@echo "--=[ All tests run ]=--"
 
 %${TEST_SYMBOL}: TEST_TARGET=$(patsubst %${TEST_SYMBOL},%,$@)
 %${TEST_SYMBOL}: FORCE
-	@echo "--=[ Testing component ${TEST_TARGET} ]=--"
-	@${MAKE} -C ${TEST_TARGET} test || echo "--=[ FAIL : Tests for ${TEST_TARGET} did not pass ]=--"
-	@echo "--=[ Completed tests for ${TEST_TARGET} ]=--"
+	@printf "${BOLD}Testing component ${TEST_TARGET}${END_STYLE}\n"
+	@${MAKE} -C ${TEST_TARGET} test && echo "${SUCCESS_TEXT}Passed tests for ${TEST_TARGET}${END_STYLE}\n\n" || printf "${FAIL_TEXT}Tests for ${TEST_TARGET} did not pass${END_STYLE}\n"
 
 
 # snapshot : save the current git revisions in use
-snapshot:
-	@echo "--=[ Saving snapshot of current install ]=--"
+snapshot: preflight-checks
+	@printf "${BOLD}Saving snapshot of current install${END_STYLE}\n"
 	@rm -f ./rottnest_snapshot
 	@for target in ${ALL_TARGETS}; do echo $${target}@$$(cd $${target} && git rev-parse HEAD) >> ./rottnest_snapshot; done
-	@echo "--=[ Snapshot saved to ./rottnest_snapshot ]=--"
+	@printf "${SUCCESS_TEXT}Snapshot saved to ./rottnest_snapshot${END_STYLE}\n"
 
 
 # load-snapshot : restore from the local snapshot file
-load-snapshot:
+load-snapshot: preflight-checks
 ifeq ($(shell [[ -e rottnest_snapshot ]]; echo $$?),1)
-	@echo "--=< No snapshot to load from >=--"
+	@printf "${FATAL_MSG}No snapshot to load from\n"
 else
-	@echo "--=[ Restoring snapshot state ]=--"
+	@printf "${BOLD}Restoring snapshot state${END_STYLE}\n"
 # A no-op patsubst is done to turn \n -> spaces (as file does not do this automatically)
 	@STATES="$(patsubst %,%,$(file <rottnest_snapshot))"; \
 		for target_state in $$STATES; do \
 			read DIR REV <<<$${target_state//@/\ }; \
 			echo $$(cd "$$DIR" && git checkout "$$REV"); \
 		done
-	@echo "--=[ Loaded snapshot state ]=--"
-	@echo "--=[ Uninstalling and reinstalling from snapshot ]=--"
+	@printf "${SUCCESS_TEXT}Loaded snapshot state${END_STYLE}\n"
+	@printf "${BOLD}Uninstalling and reinstalling from snapshot${END_STYLE}\n"
 	${MAKE} clean
 	${MAKE} build
-	@echo "--=[ Successfully installed from snapshot ]=--"
+	@printf "${SUCCESS_TEXT}Successfully installed from snapshot${END_STYLE}\n"
 endif
 
 
 # reset-snapshot : exits snapshot state (so that repos can be updated normally again)
-reset-snapshot:
-	@echo "--=[ Leaving snapshot state ]=--"
+reset-snapshot: preflight-checks
+	@printf "${BOLD}Leaving snapshot state${END_STYLE}\n"
 	@for target in ${ALL_TARGETS}; do echo $$(cd $${target} && git checkout -); done
-	@echo "--=[ Successfully returned to latest ]=--"
+	@printf "${SUCCESS_TEXT}Successfully returned to latest${BOLD}\n"
 
 
 # ---[ Includes for external components ]---
