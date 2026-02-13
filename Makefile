@@ -131,7 +131,7 @@ fetch: preflight-checks ${FETCH_CMDS}
 
 
 # clean : uninstall each component
-clean: ${CLEAN_CMDS}
+clean: preflight-checks ${CLEAN_CMDS}
 	@printf "${SUCCESS_TEXT}Rottnest successfully uninstalled${END_STYLE}\n"
 
 %${CLEAN_SYMBOL}: CLEANING_TARGET=$(patsubst %${CLEAN_SYMBOL},%,$@)
@@ -143,7 +143,7 @@ clean: ${CLEAN_CMDS}
 # delete : remove all components from the device
 # 		   cleans first to ensure the components do not remain
 #          installed
-delete: clean
+delete: preflight-checks clean
 	@rm -rf ${BASE}
 
 
