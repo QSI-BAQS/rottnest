@@ -174,7 +174,7 @@ test: preflight-checks ${TEST_CMDS}
 %${TEST_SYMBOL}: TEST_TARGET=$(patsubst %${TEST_SYMBOL},%,$@)
 %${TEST_SYMBOL}: FORCE
 	@printf "${BOLD}Testing component ${TEST_TARGET}${END_STYLE}\n"
-	@${MAKE} -C ${TEST_TARGET} test && echo "${SUCCESS_TEXT}Passed tests for ${TEST_TARGET}${END_STYLE}\n\n" || printf "${FAIL_TEXT}Tests for ${TEST_TARGET} did not pass${END_STYLE}\n"
+	@${MAKE} -C ${TEST_TARGET} test && echo "${SUCCESS_TEXT}Passed tests for ${TEST_TARGET}${END_STYLE}\n\n" || printf "${FAIL_TEXT}Tests for ${TEST_TARGET} did not pass${END_STYLE}\n\n"
 
 
 # snapshot : save the current git revisions in use
