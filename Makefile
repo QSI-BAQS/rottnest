@@ -116,11 +116,11 @@ TEST_CMDS=$(patsubst %,%${TEST_SYMBOL},${ALL_TARGETS})
 
 # ---[ Generic Command Targets ]---
 install: preflight-checks fetch build
-	@printf "${SUCCESS_TEXT}Successfully installed rottnest${END_STYLE}\n"
+	@printf "${SUCCESS_TEXT}Successfully installed rottnest${END_STYLE}\n\n"
 
 # fetch : perform the initial cloning of each component
 fetch: preflight-checks ${FETCH_CMDS}
-	@printf "${SUCCESS_TEXT}Successfully fetched rottnest components${END_STYLE}\n"
+	@printf "${SUCCESS_TEXT}Successfully fetched rottnest components${END_STYLE}\n\n"
 
 %${FETCH_SYMBOL}: FETCH_DEST=$(patsubst %${FETCH_SYMBOL},%,$@)
 %${FETCH_SYMBOL}: FETCH_REPO=$(notdir ${FETCH_DEST})
