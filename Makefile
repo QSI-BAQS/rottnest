@@ -85,7 +85,7 @@ COMMAND_CHECKERS=$(patsubst %,%${CMD_CHECK_SYMBOL},${COMMAND_DEPS})
 # ---[ Preflight Checks ]---
 # Catch errors now instead of mid build.
 preflight-checks: ${COMMAND_CHECKERS}
-	@${MAKE} --version | grep "GNU Make 4" > /dev/null 2>&1 || (printf "${FATAL_MSG} Incorrect version: ${MAKE} - $$(${MAKE} --version) (required 4.x)\n" && false)
+	@${MAKE} --version | grep "GNU Make 4" > /dev/null 2>&1 || (printf "${FATAL_MSG} Incorrect version: ${MAKE} - $$(${MAKE} --version | head -n 1) (required 4.x)\n" && false)
 	@python3 --version | grep "3.11" > /dev/null 2>&1 || (printf "${FATAL_MSG} Incorrect version: python3 - $$(python3 --version) (required 3.11)\n" && false)
 	@gcc --version > /dev/null 2>&1 || clang --version > /dev/null 2>&1 || (printf "${FATAL_MSG} Missing required command: at least one of gcc or clang\n" && false)
 	@apptainer --version > /dev/null 2>&1 || (printf "${WARN_MSG} Missing suggested command: apptainer\n")
