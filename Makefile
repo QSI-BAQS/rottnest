@@ -7,9 +7,6 @@ END_STYLE=\033[0m
 SUCCESS_TEXT:=${BOLD}\033[32m
 FAIL_TEXT:=${BOLD}\033[31m
 
-FATAL_MSG:=${FAIL_TEXT}[FATAL]${END_STYLE}
-WARN_MSG:=${BOLD}[WARN]${END_STYLE}
-
 .PHONY: all install fetch build clean delete update test snapshot load-snapshot reset-snapshot preflight-checks
 
 # Default target
@@ -80,15 +77,15 @@ COMMAND_CHECKERS=$(patsubst %,%${CMD_CHECK_SYMBOL},${COMMAND_DEPS})
 
 %${CMD_CHECK_SYMBOL}: CHECK_CMD=$(patsubst %${CMD_CHECK_SYMBOL},%,$@)
 %${CMD_CHECK_SYMBOL}:
-	@${CHECK_CMD} --version > /dev/null 2>&1 || (printf "${FATAL_MSG} Missing required command: ${CHECK_CMD}\n" && false)
+	@${CHECK_CMD} --version > /dev/null 2>&1 || (printf "${FAIL_TEXT} Missing required command: ${CHECK_CMD}${END_STYLE}\n" && false)
 
 # ---[ Preflight Checks ]---
 # Catch errors now instead of mid build.
 preflight-checks: ${COMMAND_CHECKERS}
-	@${MAKE} --version | grep "GNU Make 4" > /dev/null 2>&1 || (printf "${FATAL_MSG} Incorrect version: ${MAKE} - $$(${MAKE} --version | head -n 1) (required 4.x)\n" && false)
-	@python3 --version | grep "3.11" > /dev/null 2>&1 || (printf "${FATAL_MSG} Incorrect version: python3 - $$(python3 --version) (required 3.11)\n" && false)
-	@gcc --version > /dev/null 2>&1 || clang --version > /dev/null 2>&1 || (printf "${FATAL_MSG} Missing required command: at least one of gcc or clang\n" && false)
-	@apptainer --version > /dev/null 2>&1 || (printf "${WARN_MSG} Missing suggested command: apptainer\n")
+	@${MAKE} --version | grep "GNU Make 4" > /dev/null 2>&1 || (printf "${FAIL_TEXT}Incorrect version: ${MAKE} - $$(${MAKE} --version | head -n 1) (required 4.x)${END_STYLE}\n" && false)
+	@python3 --version | grep "3.11" > /dev/null 2>&1 || (printf "${FAIL_TEXT}Incorrect version: python3 - $$(python3 --version) (required 3.11)\n${END_STYLE}" && false)
+	@gcc --version > /dev/null 2>&1 || clang --version > /dev/null 2>&1 || (printf "${FAIL_TEXT}Missing required command: at least one of gcc or clang${END_STYLE}\n" && false)
+	@apptainer --version > /dev/null 2>&1 || (printf "${BOLD}Missing suggested command: apptainer${END_STYLE}\n")
 
 
 
@@ -126,7 +123,7 @@ fetch: preflight-checks ${FETCH_CMDS}
 %${FETCH_SYMBOL}: FETCH_REPO=$(notdir ${FETCH_DEST})
 %${FETCH_SYMBOL}:
 	@printf "${BOLD}Fetching component ${FETCH_DEST}${END_STYLE}\n"
-	@git clone ${ROTTNEST_REMOTE}/${FETCH_REPO} ${FETCH_DEST} || (printf "${FATAL_MSG} Failed to fetch ${FETCH_DEST}\n" && false)
+	@git clone ${ROTTNEST_REMOTE}/${FETCH_REPO} ${FETCH_DEST} || (printf "${FAIL_TEXT}Failed to fetch ${FETCH_DEST}${END_STYLE}\n" && false)
 	@printf "${SUCCESS_TEXT}Successfully fetched ${FETCH_DEST}${END_STYLE}\n\n"
 
 
@@ -137,7 +134,7 @@ clean: preflight-checks ${CLEAN_CMDS}
 %${CLEAN_SYMBOL}: CLEANING_TARGET=$(patsubst %${CLEAN_SYMBOL},%,$@)
 %${CLEAN_SYMBOL}: FORCE
 	@printf "${BOLD}Uninstalling component ${CLEANING_TARGET}${END_STYLE}\n"
-	@${MAKE} -C ${CLEANING_TARGET} clean || printf "${WARN_MSG} ${CLEANING_TARGET} was not installed\n"
+	@${MAKE} -C ${CLEANING_TARGET} clean || printf "${BOLD}${CLEANING_TARGET} was not installed${END_STYLE}\n"
 
 
 # delete : remove all components from the device
@@ -154,7 +151,7 @@ build: preflight-checks ${EXTERNALS}/newsynth_patch${BUILD_SYMBOL} ${BUILD_CMDS}
 %${BUILD_SYMBOL}: BUILD_DEST=$(patsubst %${BUILD_SYMBOL},%,$@)
 %${BUILD_SYMBOL}: FORCE
 	@printf "${BOLD}Installing component ${BUILD_DEST}${END_STYLE}\n"
-	@${MAKE} -C ${BUILD_DEST} build || (printf "${FATAL_MSG} Failed to build ${BUILD_DEST}\n" && false)
+	@${MAKE} -C ${BUILD_DEST} build || (printf "${FAIL_TEXT}Failed to build ${BUILD_DEST}${END_STYLE}\n" && false)
 	@printf "${SUCCESS_TEXT}Component ${BUILD_DEST} successfully installed${END_STYLE}\n\n"
 
 
@@ -164,7 +161,7 @@ update: preflight-checks ${UPDATE_CMDS}
 %${UPDATE_SYMBOL}: UPDATE_TARGET=$(patsubst %${UPDATE_SYMBOL},%,$@)
 %${UPDATE_SYMBOL}: FORCE
 	@printf "${BOLD}Updating component ${UPDATE_TARGET}${END_STYLE}\n"
-	@${MAKE} -C ${UPDATE_TARGET} update || (printf "${FATAL_MSG} Failed to update ${UPDATE_TARGET}\n" && false)
+	@${MAKE} -C ${UPDATE_TARGET} update || (printf "${FAIL_TEXT}Failed to update ${UPDATE_TARGET}${END_STYLE}\n" && false)
 	@printf "${SUCCESS_TEXT}Component ${UPDATE_TARGET} successfully updated${END_STYLE}\n\n"
 
 
@@ -188,7 +185,7 @@ snapshot: preflight-checks
 # load-snapshot : restore from the local snapshot file
 load-snapshot: preflight-checks
 ifeq ($(shell [[ -e rottnest_snapshot ]]; echo $$?),1)
-	@printf "${FATAL_MSG}No snapshot to load from\n"
+	@printf "${FAIL_TEXT}No snapshot to load from${END_STYLE}\n"
 else
 	@printf "${BOLD}Restoring snapshot state${END_STYLE}\n"
 # A no-op patsubst is done to turn \n -> spaces (as file does not do this automatically)

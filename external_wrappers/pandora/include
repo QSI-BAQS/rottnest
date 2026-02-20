@@ -2,7 +2,7 @@ ${APPLICATIONS}/pandora${FETCH_SYMBOL}: FETCH_DEST=$(patsubst %${FETCH_SYMBOL},%
 ${APPLICATIONS}/pandora${FETCH_SYMBOL}: FETCH_REPO=$(notdir ${FETCH_DEST})
 ${APPLICATIONS}/pandora${FETCH_SYMBOL}: FORCE
 	@printf "${BOLD}Fetching component ${FETCH_DEST}${END_STYLE}\n"
-	@git clone git@github.com:ioanamoflic/pandora.git ${FETCH_DEST} || (printf "${FATAL_MSG} Failed to fetch pandora\n" && false)
+	@git clone git@github.com:ioanamoflic/pandora.git ${FETCH_DEST} || (printf "${FAIL_TEXT}Failed to fetch pandora${END_STYLE}\n" && false)
 # Force main branch (as github default for pandora is a dev branch)
 	@echo $$(cd ${FETCH_DEST}; git checkout main)
 # copy wrapper Makefile into pandora (as it does not supply its own)
