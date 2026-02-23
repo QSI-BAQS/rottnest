@@ -1,6 +1,12 @@
 ROTTNEST_REMOTE=git@github.com:QSI-BAQS
 SHELL=/bin/bash
 
+# Defaults to empty, can be used to ignore dependencies
+# and skip targets by name
+# NOTE: IGNORE_DEPS does not allow skipping version checks (which are only for core dependencies anyway)
+IGNORE_DEPS=
+SKIP_TARGETS=
+
 BOLD=\033[1m
 END_STYLE=\033[0m
 
@@ -35,22 +41,21 @@ EXTERNAL_WRAPPERS=external_wrappers
 
 
 # ---[ Load component lists ]---
-LIB_REPOS=$(file < repolist/${LIB_DIR})
+LIB_REPOS=$(filter-out ${SKIP_TARGETS}, $(file < repolist/${LIB_DIR}))
 LIB_TARGETS=$(patsubst %,${LIBS}/%,${LIB_REPOS})
 
-APPLICATION_REPOS=$(file < repolist/${APPLICATION_DIR})
+APPLICATION_REPOS=$(filter-out ${SKIP_TARGETS}, $(file < repolist/${APPLICATION_DIR}))
 APPLICATION_TARGETS=$(patsubst %,${APPLICATIONS}/%,${APPLICATION_REPOS})
 
-ARCHITECTURE_REPOS=$(file < repolist/${ARCHITECTURE_DIR})
+ARCHITECTURE_REPOS=$(filter-out ${SKIP_TARGETS}, $(file < repolist/${ARCHITECTURE_DIR}))
 ARCHITECTURE_TARGETS=$(patsubst %,${ARCHITECTURES}/%,${ARCHITECTURE_REPOS})
 
-EXECUTABLE_REPOS=$(file < repolist/${EXECUTABLE_DIR})
+EXECUTABLE_REPOS=$(filter-out ${SKIP_TARGETS}, $(file < repolist/${EXECUTABLE_DIR}))
 EXECUTABLE_TARGETS=$(patsubst %,${EXECUTABLES}/%,${EXECUTABLE_REPOS})
 
-UTIL_REPOS=$(file < repolist/${UTIL_DIR})
+UTIL_REPOS=$(filter-out ${SKIP_TARGETS}, $(file < repolist/${UTIL_DIR}))
 UTIL_TARGETS=$(patsubst %,${UTILS}/%,${UTIL_REPOS})
 
-INTERNAL_REPOS:=${LIB_REPOS} ${APPLICATION_REPOS} ${ARCHITECTURE_REPOS} ${EXECUTABLE_REPOS} ${UTIL_REPOS}
 INTERNAL_TARGETS:=${LIB_TARGETS} ${APPLICATION_TARGETS} ${ARCHITECTURE_TARGETS} ${EXECUTABLE_TARGETS} ${UTIL_TARGETS}
 
 
@@ -61,23 +66,22 @@ INTERNAL_TARGETS:=${LIB_TARGETS} ${APPLICATION_TARGETS} ${ARCHITECTURE_TARGETS} 
 EXTERNAL_DIR=externals
 EXTERNALS:=${BASE}/${EXTERNAL_DIR}
 
-EXTERNAL_REPOS=$(file < repolist/${EXTERNAL_DIR})
-EXTERNAL_TARGETS=$(patsubst %,${BASE}/${EXTERNAL_DIR}/%,${EXTERNAL_REPOS})
+EXTERNAL_REPOS=$(filter-out ${SKIP_TARGETS}, $(file < repolist/${EXTERNAL_DIR}))
+EXTERNAL_TARGETS=$(patsubst %,${EXTERNALS}/%,${EXTERNAL_REPOS})
 
-
-ALL_REPOS:=${INTERNAL_REPOS} ${EXTERNAL_REPOS}
 ALL_TARGETS:=${INTERNAL_TARGETS} ${EXTERNAL_TARGETS}
 
 
 # Trivial "must-have" dependencies (more complex requirements
 # are handled explicitly in preflight-checks)
-COMMAND_DEPS=curl tar git python3 ghc cabal pip npm cargo docker
+COMMAND_DEPS=curl tar git python3 rustc cargo ghc cabal pip npm cargo docker
+COMMAND_DEPS:=$(filter-out ${IGNORE_DEPS}, ${COMMAND_DEPS})
 CMD_CHECK_SYMBOL=__cmd_check
 COMMAND_CHECKERS=$(patsubst %,%${CMD_CHECK_SYMBOL},${COMMAND_DEPS})
 
 %${CMD_CHECK_SYMBOL}: CHECK_CMD=$(patsubst %${CMD_CHECK_SYMBOL},%,$@)
 %${CMD_CHECK_SYMBOL}:
-	@${CHECK_CMD} --version > /dev/null 2>&1 || (printf "${FAIL_TEXT} Missing required command: ${CHECK_CMD}${END_STYLE}\n" && false)
+	@${CHECK_CMD} --version > /dev/null 2>&1 || (printf "${FAIL_TEXT}Missing required command: ${CHECK_CMD}${END_STYLE}\n" && false)
 
 # ---[ Preflight Checks ]---
 # Catch errors now instead of mid build.
@@ -146,7 +150,7 @@ delete: preflight-checks clean
 
 # build : build and actually install each component
 # 		  to enforce any ordering, list targets explicitly
-build: preflight-checks ${EXTERNALS}/newsynth_patch${BUILD_SYMBOL} ${BUILD_CMDS}
+build: preflight-checks ${BUILD_CMDS}
 
 %${BUILD_SYMBOL}: BUILD_DEST=$(patsubst %${BUILD_SYMBOL},%,$@)
 %${BUILD_SYMBOL}: FORCE
