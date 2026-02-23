@@ -80,6 +80,14 @@ The full set of supported commands are;
 TODO : Implement `make run`
 
 
+## Makefile Variables
+
+The following variables may prove useful, and are designed to be potentially set from the commandline:
+- `ROTTNEST_REMOTE` : Should be the prefix for a `git` target. Can be changed to attempt to fetch Rottnest components from a different location (the naming must be identical to the main Rottnest upstream, and all components must be available)
+- `IGNORE_DEPS` : Should be a space-separated list of dependencies to skip the checks for. eg. `IGNORE_DEPS="rustc cargo"` will not check if rust is installed before attempting to build.
+- `SKIP_TARGETS` : Should be a space-separated list of targets to attempt to skip. Note that they will be skipped in their entirety (no fetch, build, or install). This applies to all exposed commands. eg. `SKIP_TARGETS=rottnest_js` will ensure that the frontend is not fetched or built. Note that not all targets can be successfully skipped.
+
+
 ## For Developers
 
 Internally, the installer uses a series of templated Makefile targets to build, install, etc. components.
