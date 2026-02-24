@@ -150,7 +150,7 @@ delete: preflight-checks clean
 
 # build : build and actually install each component
 # 		  to enforce any ordering, list targets explicitly
-build: preflight-checks ${BUILD_CMDS}
+build: preflight-checks ${EXTERNALS}/newsynth_patch${BUILD_SYMBOL} ${BUILD_CMDS}
 
 %${BUILD_SYMBOL}: BUILD_DEST=$(patsubst %${BUILD_SYMBOL},%,$@)
 %${BUILD_SYMBOL}: FORCE
