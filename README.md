@@ -16,7 +16,7 @@ The Rottnest installer requires the following:
 - rustc
 - cargo
 - npm
-- ghc and cabal
+- ghc and cabal : These **must** be installed with `ghcup`, not via a system package manager.
 
 TODO : ghc and cabal (maybe more?) local installers
 
