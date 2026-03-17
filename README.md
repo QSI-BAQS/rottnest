@@ -77,7 +77,9 @@ The full set of supported commands are;
 
 ## Running Rottnest
 
-TODO : Implement `make run`
+To run rottnest, run `./run_rottnest.sh`. This will open the web-interface in your default browser.
+
+Note that you may need to refresh the page to properly connect.
 
 
 ## Makefile Variables
