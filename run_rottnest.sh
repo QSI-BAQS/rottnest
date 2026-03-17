@@ -22,14 +22,14 @@ else
     BROWSER="${BROWSER/.desktop/}"
 fi
 
-echo -n "Starting rottnest."
-
 # Cursed trap kill-all on a subshell ensures ctrl-c kills everything...
 (trap 'kill 0' SIGINT; \
-python ./rottnest/applications/rottnest_py/src/rottnest/server/server.py >/dev/null 2>/dev/null & \
-echo -n '.'; sleep 2; echo -n '.'; \
+TOP_DIR="$(pwd)"; \
+python ./rottnest/applications/rottnest_py/src/rottnest/server/server.py & \
+sleep 5; \
 cd ./rottnest/applications/rottnest_js || (kill 0 && exit 2); \
 npx vite --port 5175 >/dev/null 2>/dev/null & \
-echo -n '.'; sleep 3; echo '.'; echo -e "\nUse <ctrl>+c to end the rottnest server"; $BROWSER http://localhost:5175; wait; kill 0)
+cd "$TOP_DIR" || (kill 0 && exit 2); sleep 2; \
+$BROWSER http://localhost:5175; wait; kill 0)
 # ^ Unfortunately, we can't assume that $BROWSER will block, and so can't just exit when $BROWSER does
 # (eg. firefox only blocks if there isn't already an open instance)
