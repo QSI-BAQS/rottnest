@@ -74,7 +74,7 @@ ALL_TARGETS:=${INTERNAL_TARGETS} ${EXTERNAL_TARGETS}
 
 # Trivial "must-have" dependencies (more complex requirements
 # are handled explicitly in preflight-checks)
-COMMAND_DEPS=curl tar git python3 rustc cargo ghc cabal pip npm cargo docker
+COMMAND_DEPS=curl tar git python3 rustc cargo ghc cabal pip npm docker
 COMMAND_DEPS:=$(filter-out ${IGNORE_DEPS}, ${COMMAND_DEPS})
 CMD_CHECK_SYMBOL=__cmd_check
 COMMAND_CHECKERS=$(patsubst %,%${CMD_CHECK_SYMBOL},${COMMAND_DEPS})

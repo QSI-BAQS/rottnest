@@ -20,7 +20,7 @@ test:
 	pytest
 
 apptainer_build: apptainer_base
-	cd apptainer;
+	cd apptainer; \
 		mkdir -p "${IMG_DIR}"; \
 		singularity build "${IMG_DIR}/pandora.sif" docker-daemon://local/${APP_NAME}:latest || echo ""
 
