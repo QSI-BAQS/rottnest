@@ -1,4 +1,4 @@
-ROTTNEST_REMOTE=git@github.com:QSI-BAQS
+ROTTNEST_REMOTE=https://github.com/QSI-BAQS
 SHELL=/bin/bash
 
 # Defaults to empty, can be used to ignore dependencies
