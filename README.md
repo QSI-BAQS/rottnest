@@ -4,7 +4,8 @@
 
 **Any Python environment setup (eg. `venv`, `conda`, etc.) must be done BEFORE running the installer.** The installer will use `pip` - ensure you have an environment in which `pip` can successfully install packages.
 
-If you're on Ubuntu, you can run `./ubuntu_install/ubuntu_apt_helper.sh` to install all the required packages (this requires `sudo`), then run `./ubuntu_install/ubuntu_setup.sh` to install Rottnest itself into a virtual environment in the current directory.
+Distribution specific setup scripts can be found in the `distro_scripts` directory.
+
 
 
 ### Dependencies
