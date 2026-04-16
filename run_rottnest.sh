@@ -9,13 +9,13 @@ BROWSER="$(xdg-mime query default text/html 2>/dev/null)"
 
 if [[ "$BROWSER" == "" ]]; then
     # Mac - check and run Applications via `open`
-    if [[ "$(uname -a)" == "Darwin" ]]; then
+    if [[ "$(uname -s)" == "Darwin" ]]; then
         if open -Ra "firefox" &>/dev/null; then
-            BROWSER="open -a firefox --args"
+            BROWSER="open -a firefox"
         elif open -Ra "Google Chrome" &>/dev/null; then
-            BROWSER="open -a 'Google Chrome' --args"
+            BROWSER="open -a 'Google Chrome'"
         elif open -Ra "Safari" &>/dev/null; then
-            BROWSER="open -a 'Safari' --args"
+            BROWSER="open -a 'Safari'"
         fi
     # Non-Mac Unix - hopefully $PATH is configured correctly
     else
