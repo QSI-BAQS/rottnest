@@ -5,21 +5,34 @@ if [[ ! -d "rottnest" ]]; then
     exit 1
 fi
 
-BROWSER="$(xdg-mime query default text/html)"
+BROWSER="$(xdg-mime query default text/html 2>/dev/null)"
 
 if [[ "$BROWSER" == "" ]]; then
-    if [[ $(which firefox; echo "$?") -eq 0 ]]; then
-        BROWSER=firefox
-    elif [[ $(which chrome; echo "$?") -eq 0 ]]; then
-        BROWSER=chrome
-    elif [[ $(which chromium; echo "$?") -eq 0 ]]; then
-        BROWSER=chromium
+    # Mac - check and run Applications via `open`
+    if [[ "$(uname -a)" == "Darwin" ]]; then
+        if open -Ra "firefox"; then
+            BROWSER="open -a firefox --args"
+        elif open -Ra "Google Chrome"; then
+            BROWSER="open -a 'Google Chrome' --args"
+        elif open -Ra "Safari"; then
+            BROWSER="open -a 'Safari' --args"
+        fi
+    # Non-Mac Unix - hopefully $PATH is configured correctly
     else
-        echo "Could not determine a web-browser to run the frontend with"
-        exit 1
+        if which firefox; then
+            BROWSER=firefox
+        elif which chrome; then
+            BROWSER=chrome
+        elif which chromium; then
+            BROWSER=chromium
+        fi
     fi
 else
     BROWSER="${BROWSER/.desktop/}"
+fi
+
+if [[ -z "$BROWSER" ]]; then
+    echo "Could not find a supported browser, please install Firefox or Google Chrome and ensure they can be run (either from PATH or, on Mac, with \`open\`)"
 fi
 
 # Cursed trap kill-all on a subshell ensures ctrl-c kills everything...
@@ -28,7 +41,7 @@ TOP_DIR="$(pwd)"; \
 python ./rottnest/applications/rottnest_py/src/rottnest/server/server.py & \
 sleep 5; \
 cd ./rottnest/applications/rottnest_js || (kill 0 && exit 2); \
-npx vite --port 5175 >/dev/null 2>/dev/null & \
+npx vite --port 5175 &>/dev/null & \
 cd "$TOP_DIR" || (kill 0 && exit 2); sleep 2; \
 $BROWSER http://localhost:5175; wait; kill 0)
 # ^ Unfortunately, we can't assume that $BROWSER will block, and so can't just exit when $BROWSER does
