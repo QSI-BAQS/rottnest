@@ -6,6 +6,10 @@
 
 Distribution specific setup scripts can be found in the `distro_scripts` directory.
 
+### Mac Users
+
+If you are on Mac, please run `./distro_scripts/mac/mac_setup.sh` from the current directory. This will install prerequisites using `brew`, and then install Rottnest itself into a local virtual environment.
+
 
 
 ### Dependencies
@@ -22,19 +26,14 @@ The Rottnest installer requires the following:
 - npm
 - ghc and cabal : These **must** be installed with `ghcup`, not via a system package manager.
 
-TODO : ghc and cabal (maybe more?) local installers
-
 When installing Rottnest, it will install some pip packages. The installer does not create or interact with Python virtual environments. If you wish to install the packages inside a virtual environment, please ensure the environment is activated before running the installer.
-
 
 The components also have their own runtime dependencies. Most components handle the installation of their own dependencies. However, the following must be installed independently:
 
-- Apptainer
+- Apptainer [OPTIONAL, not available on Mac]
 - Docker
 - Singularity
 - vite
-
-TODO : Status of apptainer-less pandora w/ docker
 
 
 ### Running the Installer
