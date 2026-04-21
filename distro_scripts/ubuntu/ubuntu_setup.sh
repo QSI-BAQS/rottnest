@@ -13,7 +13,7 @@ for REQ in $REQUIRED; do
     fi
 done
 
-if [[ "$MISSING" != "" ]]; then
+if [[ ! -z "$MISSING" ]]; then
     echo -e "The following required packages are missing:\n $MISSING"
     echo -e "\nPlease install them using apt\n"
     echo -e "NOTE: Docker packages must be installed from docker's apt repository\nSee https://docs.docker.com/engine/install/ubuntu/, section 'Install using the apt repository'"
