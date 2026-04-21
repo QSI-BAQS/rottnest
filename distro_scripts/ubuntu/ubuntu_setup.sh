@@ -8,7 +8,7 @@ REQUIRED="git curl gcc build-essential libssl-dev zlib1g-dev libbz2-dev libreadl
 MISSING=""
 
 for REQ in $REQUIRED; do
-    if echo "$ALL_PKGS" | grep "$REQ" >/dev/null; then
+    if ! echo "$ALL_PKGS" | grep "$REQ" >/dev/null; then
         MISSING="$REQ $MISSING"
     fi
 done

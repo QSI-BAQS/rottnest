@@ -2,7 +2,7 @@
 
 set -e
 
-if which brew; then
+if ! which brew; then
   echo "Rottnest needs homebrew to install its dependencies, please install homebrew before running mac setup"
   exit 1
 fi
@@ -15,18 +15,18 @@ fi
 # Python (brew)
 PYTHON_TARGET=""
 
-if ! which python3.11; then
+if which python3.11; then
   PYTHON_TARGET=python3.11
-elif ! which python3; then
+elif which python3; then
   PYTHON_TARGET=python3;
-elif ! which python; then
+elif which python; then
   PYTHON_TARGET=python;
 fi
 
 # Version check
 if [[ ! -z "$PYTHON_TARGET" ]]; then
   # If version is not 3.11, the given version is invalid
-  if "$PYTHON_TARGET" --version | grep "3.11"; then
+  if ! "$PYTHON_TARGET" --version | grep "3.11"; then
     PYTHON_TARGET=""
   fi
 fi
@@ -40,7 +40,7 @@ fi
 
 
 # GHC (ghcup)
-if which ghc || which cabal; then
+if ! which ghc || ! which cabal; then
   echo "Could not find a ghc installation, installing it via ghcup"
   curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org > /tmp/ghcup
   chmod u+x /tmp/ghcup
@@ -52,7 +52,7 @@ else
 fi
 
 # rust (brew)
-if which rustc || which cargo; then
+if ! which rustc || ! which cargo; then
   echo "Could not find a rust installation, installing it via brew"
   brew install rust
 fi
