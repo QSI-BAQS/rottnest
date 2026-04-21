@@ -8,7 +8,7 @@ if ! which brew; then
 fi
 
 # GNUMake (up-to-date thru brew)
-if which gmake; then
+if ! which gmake; then
     brew install make
 fi
 
