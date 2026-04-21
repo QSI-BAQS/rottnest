@@ -57,6 +57,13 @@ if ! which rustc || ! which cargo; then
   brew install rust
 fi
 
+
+# npm (brew)
+if ! which npm; then
+  echo "Could not find a node installation, installing it via brew"
+  brew install node
+fi
+
 echo -e "Successfully installed rottnest dependencies. Creating a virtual environment at ./venv"
 $PYTHON_TARGET -m venv ./venv
 source venv/bin/activate
