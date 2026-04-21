@@ -1,14 +1,14 @@
 #!/bin/bash
 
 # Pre-check apt packages, since we aren't going to install them here (no sudo)
-export ALL_PKGS="$(apt list --installed 2>/dev/null)"
+ALL_PKGS="$(apt list --installed 2>/dev/null)"
 
 REQUIRED="git curl gcc build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev libncurses-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev libffi8 libgmp-dev libgmp10 libncurses-dev pkg-config npm docker-ce docker-ce-cli docker-buildx-plugin"
 
 MISSING=""
 
 for REQ in $REQUIRED; do
-    if [[ "$(echo "$ALL_PKGS" | grep "$REQ" >/dev/null; echo "$?")" -ne 0 ]]; then
+    if echo "$ALL_PKGS" | grep "$REQ" >/dev/null; then
         MISSING="$REQ $MISSING"
     fi
 done
