@@ -7,4 +7,6 @@ ${APPLICATIONS}/pandora${FETCH_SYMBOL}: FORCE
 	@echo $$(cd ${FETCH_DEST}; git checkout main)
 # copy wrapper Makefile into pandora (as it does not supply its own)
 	cp ${EXTERNAL_WRAPPERS}/pandora/Makefile ${FETCH_DEST}/Makefile
+	cp ${EXTERNAL_WRAPPERS}/pandora/pyproject.toml ${FETCH_DEST}/pyproject.toml
+	cp ${EXTERNAL_WRAPPERS}/pandora/setup.cfg ${FETCH_DEST}/setup.cfg
 	@printf "${SUCCESS_TEXT}Successfully fetched ${FETCH_DEST}${END_STYLE}\n\n"
