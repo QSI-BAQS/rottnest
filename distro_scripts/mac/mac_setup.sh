@@ -81,6 +81,8 @@ echo -e "Successfully installed rottnest dependencies. Creating a virtual enviro
 $PYTHON_TARGET -m venv ./venv
 source venv/bin/activate
 
+echo "Installing rottnest. You may get a window regarding docker if it was not already installed."
+
 gmake
 
 echo "Installed rottnest. Please use 'source venv/bin/activate' to enable the associated version of python"
