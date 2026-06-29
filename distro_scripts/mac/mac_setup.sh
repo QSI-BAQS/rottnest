@@ -64,6 +64,19 @@ if ! which npm; then
   brew install node
 fi
 
+# docker (brew)
+if ! which docker; then
+    echo "Could not find a docker installation, installing it via brew"
+    brew install --cask docker-desktop
+    brew install docker-buildx
+fi
+
+# create default config files
+echo "Creating default rottnest config"
+mkdir -p ~/.config/rottnest
+echo "t_scheduler" >> ~/.config/rottnest/architectures
+echo "rottnest_example_executables" >> ~/.config/rottnest/executables
+
 echo -e "Successfully installed rottnest dependencies. Creating a virtual environment at ./venv"
 $PYTHON_TARGET -m venv ./venv
 source venv/bin/activate
