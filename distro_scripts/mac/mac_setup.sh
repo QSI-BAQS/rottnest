@@ -9,7 +9,7 @@ fi
 
 # GNUMake (up-to-date thru brew)
 if ! which gmake; then
-    brew install make
+    brew install -y make
 fi
 
 # Python (brew)
@@ -33,12 +33,12 @@ fi
 
 if [[ -z "$PYTHON_TARGET" ]]; then
   echo "Could not find a python3.11 installation, installing it via brew"
-  brew install python@3.11
+  brew install -y python@3.11
   PYTHON_TARGET=python3.11
   echo "Installed python under the name python3.11"
 fi
 
-if ! python --version | grep "3.11" then
+if ! python --version | grep "3.11"; then
   echo "Python was installed, but 'python' does not point to the right version. Please ensure that the version of 'python' available on PATH is python 3.11, then run this script again"
   exit 1
 fi
@@ -59,21 +59,21 @@ fi
 # rust (brew)
 if ! which rustc || ! which cargo; then
   echo "Could not find a rust installation, installing it via brew"
-  brew install rust
+  brew install -y rust
 fi
 
 
 # npm (brew)
 if ! which npm; then
   echo "Could not find a node installation, installing it via brew"
-  brew install node
+  brew install -y node
 fi
 
 # docker (brew)
 if ! which docker; then
     echo "Could not find a docker installation, installing it via brew"
-    brew install --cask docker-desktop
-    brew install docker-buildx
+    brew install -y --cask docker-desktop
+    brew install -y docker-buildx
 fi
 
 # create default config files
