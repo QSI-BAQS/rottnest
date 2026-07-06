@@ -38,6 +38,11 @@ if [[ -z "$PYTHON_TARGET" ]]; then
   echo "Installed python under the name python3.11"
 fi
 
+if ! python --version | grep "3.11" then
+  echo "Python was installed, but 'python' does not point to the right version. Please ensure that the version of 'python' available on PATH is python 3.11, then run this script again"
+  exit 1
+fi
+
 
 # GHC (ghcup)
 if ! which ghc || ! which cabal; then
@@ -77,12 +82,8 @@ mkdir -p ~/.config/rottnest
 echo "t_scheduler" >> ~/.config/rottnest/architectures
 echo "rottnest_example_executables" >> ~/.config/rottnest/executables
 
-echo -e "Successfully installed rottnest dependencies. Creating a virtual environment at ./venv"
-$PYTHON_TARGET -m venv ./venv
-source venv/bin/activate
-
 echo "Installing rottnest. You may get a window regarding docker if it was not already installed."
 
 gmake
 
-echo "Installed rottnest. Please use 'source venv/bin/activate' to enable the associated version of python"
+echo "Installed rottnest."
