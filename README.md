@@ -2,13 +2,19 @@
 
 ## Installation
 
-**Any Python environment setup (eg. `venv`, `conda`, etc.) must be done BEFORE running the installer.** The installer will use `pip` - ensure you have an environment in which `pip` can successfully install packages.
+**Any Python environment setup (eg. `venv`, `conda`, etc.) must be done BEFORE running the Makefile.** The installer will use `pip` - ensure you have an environment in which `pip` can successfully install packages.
 
 Distribution specific setup scripts can be found in the `distro_scripts` directory. Currently, scripts for Ubuntu and Mac are available.
 
 ### Mac Users
 
-If you are on Mac, please run `./distro_scripts/mac/mac_setup.sh` from the current directory. This will install prerequisites using `brew`, and then install Rottnest itself. For the installation, please ensure that the version of `python` found on `PATH` is `python 3.11`, and that any desired python environment setup has been done before running the installer.
+If you are on Mac, from the current directory please run `./distro_scripts/mac/mac_setup.sh`.
+
+This will install prerequisites using `brew`, and then install Rottnest itself.
+
+If you already have python installed, please ensure you have configured your python environment such that `python` on `PATH` is `python 3.11`.
+
+If python is not already installed, the script will install it. Please then create a virtual environment using `python3.11 -m venv ./venv`, run `source ./venv/bin/activate` and then rerun the installer script.
 
 
 ### Dependencies

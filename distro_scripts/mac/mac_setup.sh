@@ -38,12 +38,6 @@ if [[ -z "$PYTHON_TARGET" ]]; then
   echo "Installed python under the name python3.11"
 fi
 
-if ! python --version | grep "3.11"; then
-  echo "Python was installed, but 'python' does not point to the right version. Please ensure that the version of 'python' available on PATH is python 3.11, then run this script again"
-  exit 1
-fi
-
-
 # GHC (ghcup)
 if ! which ghc || ! which cabal; then
   echo "Could not find a ghc installation, installing it via ghcup"
@@ -75,6 +69,15 @@ if ! which docker; then
     brew install -y --cask docker-desktop
     brew install -y docker-buildx
 fi
+
+
+if ! python --version | grep "3.11"; then
+  echo
+  echo "Python was found, but 'python' does not point to the right version. Please ensure that the version of 'python' available on PATH is python 3.11, then run this script again. If python was installed by this script, you can use 'python3.11 -m venv ./venv', and then 'source ./venv/bin/activate;. Once python points to the correct version, rerun this script to continue the installation."
+  exit 1
+fi
+
+
 
 # create default config files
 echo "Creating default rottnest config"
