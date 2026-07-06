@@ -48,11 +48,8 @@ BOOTSTRAP_HASKELL_NONINTERACTIVE=1 BOOTSTRAP_HASKELL_GHC_VERSION=latest BOOTSTRA
 source ~/.ghcup/env
 
 
-echo -e "\nSuccessfully installed rottnest pre-reqs. Installing rottnest inside a local virtual environment"
-
-python3 -m venv ./venv
-source venv/bin/activate
+echo -e "\nSuccessfully installed rottnest pre-reqs. Installing rottnest."
 
 make
 
-echo "Installed rottnest. Please use 'source venv/bin/activate' to enable the associated version of python"
+echo "Installed rottnest."
