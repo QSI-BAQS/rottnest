@@ -5,9 +5,11 @@ if [[ ! -d "rottnest" ]]; then
     exit 1
 fi
 
-BROWSER="$(xdg-mime query default text/html 2>/dev/null)"
+if xdg-mime query default text/html &>/dev/null; then
+    BROWSER=(xdg-open)
+fi
 
-if [[ "$BROWSER" == "" ]]; then
+if [[ -z "${BROWSER[*]}" ]]; then
     # Mac - check and run Applications via `open`
     if [[ "$(uname -s)" == "Darwin" ]]; then
         if open -Ra "firefox" &>/dev/null; then
@@ -18,6 +20,7 @@ if [[ "$BROWSER" == "" ]]; then
             BROWSER=(open -a Safari)
         fi
     # Non-Mac Unix - hopefully $PATH is configured correctly
+    # (or mime worked above)
     else
         if which firefox &>/dev/null; then
             BROWSER=(firefox)
@@ -27,8 +30,6 @@ if [[ "$BROWSER" == "" ]]; then
             BROWSER=(chromium)
         fi
     fi
-else
-    BROWSER=("${BROWSER/.desktop/}")
 fi
 
 if [[ -z "${BROWSER[*]}" ]]; then
