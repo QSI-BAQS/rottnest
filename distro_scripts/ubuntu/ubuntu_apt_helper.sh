@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 if [[ "$EUID" -ne 0 ]]; then
     echo "This script must be run with 'sudo'"
     exit 1

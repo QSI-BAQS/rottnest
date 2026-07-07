@@ -2,40 +2,24 @@
 
 set -e
 
+if [[ "$EUID" -eq 0 ]]; then
+  echo "This script should not be run as root, please rerun without sudo"
+  exit 1
+fi
+
 if ! which brew; then
   echo "Rottnest needs homebrew to install its dependencies, please install homebrew before running mac setup"
+  exit 1
+fi
+
+if ! which python || ! python --version | grep "3.11"; then
+  echo "Rottnest requires that 'python' on PATH is python 3.11. Please configure your python environment such that the correct version is available under the name 'python'"
   exit 1
 fi
 
 # GNUMake (up-to-date thru brew)
 if ! which gmake; then
     brew install -y make
-fi
-
-# Python (brew)
-PYTHON_TARGET=""
-
-if which python3.11; then
-  PYTHON_TARGET=python3.11
-elif which python3; then
-  PYTHON_TARGET=python3;
-elif which python; then
-  PYTHON_TARGET=python;
-fi
-
-# Version check
-if [[ ! -z "$PYTHON_TARGET" ]]; then
-  # If version is not 3.11, the given version is invalid
-  if ! "$PYTHON_TARGET" --version | grep "3.11"; then
-    PYTHON_TARGET=""
-  fi
-fi
-
-if [[ -z "$PYTHON_TARGET" ]]; then
-  echo "Could not find a python3.11 installation, installing it via brew"
-  brew install -y python@3.11
-  PYTHON_TARGET=python3.11
-  echo "Installed python under the name python3.11"
 fi
 
 # GHC (ghcup)
@@ -69,14 +53,6 @@ if ! which docker; then
     brew install -y --cask docker-desktop
     brew install -y docker-buildx
 fi
-
-
-if ! python --version | grep "3.11"; then
-  echo
-  echo "Python was found, but 'python' does not point to the right version. Please ensure that the version of 'python' available on PATH is python 3.11, then run this script again. If python was installed by this script, you can use 'python3.11 -m venv ./venv', and then 'source ./venv/bin/activate;. Once python points to the correct version, rerun this script to continue the installation."
-  exit 1
-fi
-
 
 
 # create default config files

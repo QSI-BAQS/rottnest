@@ -1,5 +1,12 @@
 #!/bin/bash
 
+set -e
+
+if [[ "$EUID" -eq 0 ]]; then
+    echo "This script should not be run as root. Please run without sudo"
+    exit 1
+fi
+
 # Pre-check apt packages, since we aren't going to install them here (no sudo)
 ALL_PKGS="$(apt list --installed 2>/dev/null)"
 
@@ -20,35 +27,36 @@ if [[ ! -z "$MISSING" ]]; then
     exit 1
 fi
 
+if ! which python || ! python --version | grep "3.11"; then
+    echo "Rottnest requires that 'python' on PATH is python 3.11. Please configure your python environment such that the correct version is available under the name 'python'"
+    exit 1
+fi
+
 echo "Installing rottnest prerequisites that aren't provided by apt"
 echo "You may see warnings about reinstallations. These should be fine"
 
-# pyenv
-curl -fsSL https://pyenv.run > /tmp/pyenv-installer
-chmod u+x /tmp/pyenv-installer
-/tmp/pyenv-installer -y
-
-export PYENV_ROOT="$HOME/.pyenv"
-export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init - bash)"
-
-pyenv install 3.11 -f
-pyenv global 3.11
-
 # rustup
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs > /tmp/rustup
-chmod u+x /tmp/rustup
-/tmp/rustup -y
+if ! which rustc || ! which cargo; then
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs > /tmp/rustup
+    chmod u+x /tmp/rustup
+    /tmp/rustup -y
+fi
 source ~/.cargo/env
 
 # ghcup
-curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org > /tmp/ghcup
-chmod u+x /tmp/ghcup
-BOOTSTRAP_HASKELL_NONINTERACTIVE=1 BOOTSTRAP_HASKELL_GHC_VERSION=latest BOOTSTRAP_HASKELL_CABAL_VERSION=latest /tmp/ghcup
+if ! which ghc || ! which cabal; then
+    curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org > /tmp/ghcup
+    chmod u+x /tmp/ghcup
+    BOOTSTRAP_HASKELL_NONINTERACTIVE=1 BOOTSTRAP_HASKELL_GHC_VERSION=latest BOOTSTRAP_HASKELL_CABAL_VERSION=latest /tmp/ghcup
+fi
 source ~/.ghcup/env
 
 
 echo -e "\nSuccessfully installed rottnest pre-reqs. Installing rottnest."
+echo "Creating default rottnest config"
+mkdir -p ~/.config/rottnest
+echo "t_scheduler" >> ~/.config/rottnest/architectures
+echo "rottnest_example_executables" >> ~/.config/rottnest/executables
 
 make
 
