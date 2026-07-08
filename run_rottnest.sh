@@ -16,8 +16,6 @@ if [[ -z "${BROWSER[*]}" ]]; then
             BROWSER=(open -a firefox)
         elif open -Ra "Google Chrome" &>/dev/null; then
             BROWSER=(open -a "Google Chrome")
-        elif open -Ra "Safari" &>/dev/null; then
-            BROWSER=(open -a Safari)
         fi
     # Non-Mac Unix - hopefully $PATH is configured correctly
     # (or mime worked above)
@@ -34,6 +32,7 @@ fi
 
 if [[ -z "${BROWSER[*]}" ]]; then
     echo "Could not find a supported browser, please install Firefox or Google Chrome and ensure they can be run (either from PATH or, on Mac, with \`open\`)"
+    exit 1
 fi
 
 # Cursed trap kill-all on a subshell ensures ctrl-c kills everything...

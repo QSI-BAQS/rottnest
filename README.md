@@ -26,7 +26,7 @@ To install on another Linux distribution, please install the dependencies listed
 
 ## Running
 
-To run Rottnest, please use the `./run_rottnest.sh` script. It requires that you have Firefox, Chrome or Safari installed.
+To run Rottnest, please use the `./run_rottnest.sh` script. It requires that you have Firefox or Chrome installed.
 
 
 ## Dependencies
