@@ -4,7 +4,7 @@
 
 ### Mac
 
-To install on Mac, from the current directory please run `./distro_scripts/mac/mac_setup.sh`
+To install on Mac, from the current directory please run `./distro_scripts/mac/mac_install.sh`
 - The script requires Homebrew to install Rottnest's dependencies
 - The script requires that you have `python` installed, and that the version of `python` on `PATH` is `python 3.11`
 
@@ -15,7 +15,7 @@ To install on Ubuntu;
 - Please either;
     - From the current directory, run `./distro_scripts/ubuntu/ubuntu_apt_helper.sh` as root. This will use `apt` to install most of Rottnest's dependencies
     - Install the dependencies (listed below) yourself
-- Then, from the current directory, run `./distro_scripts/ubuntu/ubuntu_setup.sh` (not as root). This will install Rottnest.
+- Then, from the current directory, run `./distro_scripts/ubuntu/ubuntu_install.sh` (not as root). This will install Rottnest.
     - The script requires that you have `python` installed, and that the version of `python` on `PATH` is `python 3.11`
 
 
