@@ -52,6 +52,16 @@ fi
 source ~/.ghcup/env
 
 
+USED_NVM=0
+if ! which npm || ! which node || ! node --version | grep 'v2[456789]'; then
+    USED_NVM=1
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.5/install.sh | bash
+    source "$HOME/.nvm/nvm.sh"
+    nvm install 24
+    nvm use 24
+fi
+
+
 echo -e "\nSuccessfully installed rottnest pre-reqs. Installing rottnest."
 echo "Creating default rottnest config"
 mkdir -p ~/.config/rottnest
@@ -61,3 +71,7 @@ echo "rottnest_example_executables" >> ~/.config/rottnest/executables
 make
 
 echo "Installed rottnest."
+
+if [ $USED_NVM -eq 1 ]; then
+    echo "Nodejs was installed using nvm. You may need to restart your shell to ensure the version of node on PATH is correct."
+fi
