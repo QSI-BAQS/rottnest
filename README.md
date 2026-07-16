@@ -29,6 +29,17 @@ To install on another Linux distribution, please install the dependencies listed
 To run Rottnest, please use the `./run_rottnest.sh` script. It requires that you have Firefox or Chrome installed.
 
 
+## Troubleshooting
+
+- Makefile reports `rustc` or `cargo` not found after running an installer script:
+    - Try `source ~/.cargo/env`. If you want this to be automated, consider adding it to your shell profile (`.bashrc`, `.zshrc` or similar)
+- Makefile reports `ghc` or `cabal` not found after running an installer script:
+    - Try `source ~/.ghcup/env`. If you want this to be automated, consider adding it to your shell profile (`.bashrc`, `.zshrc` or similar)
+- Makefile errors on calling `make` again after a (partial) install
+    - Try running `make build` instead, which skips cloning the git repos again (this clone may fail if the components are already present)
+    - Try running `make delete` before re-running `make` - this will remove all of the Rottnest components, allowing a clean reinstall from scratch
+
+
 ## Dependencies
 
 The Rottnest installer requires the following:
