@@ -88,7 +88,7 @@ COMMAND_CHECKERS=$(patsubst %,%${CMD_CHECK_SYMBOL},${COMMAND_DEPS})
 # TODO : Node version check is stupid and should use an actual range check
 preflight-checks: ${COMMAND_CHECKERS}
 	@${MAKE} --version | grep "GNU Make 4" > /dev/null 2>&1 || (printf "${FAIL_TEXT}Incorrect version: ${MAKE} - $$(${MAKE} --version | head -n 1) (required 4.x)${END_STYLE}\n" && false)
-	@node --version | grep "v2[456]" > /dev/null 2>&1 || (printf "${FAIL_TEXT}Incorrect version: node - $$(node --version) (required >=v24)\n${END_STYLE}" && false)
+	@node --version | grep "v2[456789]" > /dev/null 2>&1 || (printf "${FAIL_TEXT}Incorrect version: node - $$(node --version) (required >=v24)\n${END_STYLE}" && false)
 	@python3 --version | grep "3.11" > /dev/null 2>&1 || (printf "${FAIL_TEXT}Incorrect version: python3 - $$(python3 --version) (required 3.11)\n${END_STYLE}" && false)
 	@gcc --version > /dev/null 2>&1 || clang --version > /dev/null 2>&1 || (printf "${FAIL_TEXT}Missing required command: at least one of gcc or clang${END_STYLE}\n" && false)
 	@apptainer --version > /dev/null 2>&1 || (printf "${BOLD}Missing suggested command: apptainer${END_STYLE}\n")
