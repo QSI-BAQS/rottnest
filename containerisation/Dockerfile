@@ -23,10 +23,10 @@ RUN cd /home/rottnest && ./distro_scripts/ubuntu/ubuntu_apt_helper.sh && rm -rf 
 RUN su rottnest -c "git clone https://github.com/pyenv/pyenv.git ~/.pyenv && ~/.pyenv/bin/pyenv init --install && ~/.pyenv/bin/pyenv install 3.11 && ~/.pyenv/bin/pyenv global 3.11"
 
 # Install Rottnest repos and forve npm version
-RUN su rottnest -c "cd /home/rottnest && ~/.pyenv/bin/pyenv global 3.11 && ./distro_scripts/ubuntu/ubuntu_install.sh && nvm alias default 24"
+RUN su rottnest -c "source ~/.bashrc && pyenv global 3.11 && cd /home/rottnest && ./distro_scripts/ubuntu/ubuntu_install.sh && nvm alias default 24"
 
 # Expose front end port
 EXPOSE 5175/tcp
 
-CMD su rottnest -c "cd /home/rottnest/rottnest/applications/rottnest_js && npx vite --port 5175 --host 0.0.0.0 &>/dev/null; cd /home/rottnest/rottnest/applications/rottnest_py && /home/rottnest/.pyenv/shims/python src/rottnest/server/server.py" 
+CMD su rottnest -c "source ~/.bashrc && pyenv global 3.11 && cd /home/rottnest/rottnest/applications/rottnest_js && npx vite --port 5175 --host 0.0.0.0 &>/dev/null; cd /home/rottnest/rottnest/applications/rottnest_py && /home/rottnest/.pyenv/shims/python src/rottnest/server/server.py" 
 
