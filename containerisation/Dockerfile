@@ -30,6 +30,7 @@ RUN su rottnest -c "source ~/.bashrc && nvm install 24 && NODE_VER=$(ls /home/ro
 
 # Expose front end port
 EXPOSE 5175/tcp
+EXPOSE 8080/tcp
 
-CMD su rottnest -c "source ~/.bashrc && pyenv global 3.11 && cd /home/rottnest/rottnest/applications/rottnest_js && npx vite --port 5175 --host 0.0.0.0 &>/dev/null; cd /home/rottnest/rottnest/applications/rottnest_py && /home/rottnest/.pyenv/shims/python src/rottnest/server/server.py" 
+CMD su rottnest -c "source ~/.bashrc && pyenv global 3.11 && cd /home/rottnest/rottnest/applications/rottnest_js && npx vite --port 5175 --host 0.0.0.0 & source ~/.bashrc && cd /home/rottnest/rottnest/applications/rottnest_py && /home/rottnest/.pyenv/shims/python src/rottnest/server/server.py &" 
 
