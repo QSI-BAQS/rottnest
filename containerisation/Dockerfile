@@ -22,8 +22,11 @@ RUN cd /home/rottnest && ./distro_scripts/ubuntu/ubuntu_apt_helper.sh && rm -rf 
 # This gets the correct python version
 RUN su rottnest -c "git clone https://github.com/pyenv/pyenv.git ~/.pyenv && ~/.pyenv/bin/pyenv init --install && ~/.pyenv/bin/pyenv install 3.11 && ~/.pyenv/bin/pyenv global 3.11"
 
-# Install Rottnest repos and forve npm version
-RUN su rottnest -c "source ~/.bashrc && pyenv global 3.11 && cd /home/rottnest && ./distro_scripts/ubuntu/ubuntu_install.sh && nvm alias default 24"
+# Install Rottnest repos 
+RUN su rottnest -c "source ~/.bashrc && pyenv global 3.11 && cd /home/rottnest && ./distro_scripts/ubuntu/ubuntu_install.sh"
+
+# Npm Versioning
+RUN su rottnest -c "source ~/.bashrc && nvm install 24 && NODE_VER=$(ls /home/rottnest/.nvm/versions/node/)"
 
 # Expose front end port
 EXPOSE 5175/tcp
