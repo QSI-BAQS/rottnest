@@ -226,13 +226,13 @@ reset-snapshot: preflight-checks
 include ${EXTERNAL_WRAPPERS}/*/include
 
 # Docker build for rottnest
-docker-build-rottnest:
+docker-build:
 	@printf "${BOLD}Building docker image - This may take a while"
 	docker build -t rottnest:ubuntu2604 -f ./$(CONTAINER_PATH)/Dockerfile .
 	@printf "${BOLD}Finished Building Docker image"
 
 # Docker run for rottnest
-docker-run-rottnest:
+docker-run:
 	@printf "${BOLD}Running Docker Image, Access Rottnest using localhost:5175"
 	docker run --network host -p 5175:5175 -p 8080:8080  -t rottnest:ubuntu2604
 
