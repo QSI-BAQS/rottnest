@@ -40,6 +40,13 @@ UTILS:=${BASE}/${UTIL_DIR}
 EXTERNAL_WRAPPERS=external_wrappers
 
 
+# Defaults it builds with
+CONTAINER_PATH=containerisation
+
+
+# run: docker-run-rottnestjs docker-run-rottnestpy
+
+
 # ---[ Load component lists ]---
 LIB_REPOS=$(filter-out ${SKIP_TARGETS}, $(file < repolist/${LIB_DIR}))
 LIB_TARGETS=$(patsubst %,${LIBS}/%,${LIB_REPOS})
@@ -74,7 +81,7 @@ ALL_TARGETS:=${INTERNAL_TARGETS} ${EXTERNAL_TARGETS}
 
 # Trivial "must-have" dependencies (more complex requirements
 # are handled explicitly in preflight-checks)
-COMMAND_DEPS=curl tar git python3 rustc cargo ghc cabal pip npm docker
+COMMAND_DEPS=curl tar git python rustc cargo ghc cabal pip npm docker
 COMMAND_DEPS:=$(filter-out ${IGNORE_DEPS}, ${COMMAND_DEPS})
 CMD_CHECK_SYMBOL=__cmd_check
 COMMAND_CHECKERS=$(patsubst %,%${CMD_CHECK_SYMBOL},${COMMAND_DEPS})
@@ -89,7 +96,7 @@ COMMAND_CHECKERS=$(patsubst %,%${CMD_CHECK_SYMBOL},${COMMAND_DEPS})
 preflight-checks: ${COMMAND_CHECKERS}
 	@${MAKE} --version | grep "GNU Make 4" > /dev/null 2>&1 || (printf "${FAIL_TEXT}Incorrect version: ${MAKE} - $$(${MAKE} --version | head -n 1) (required 4.x)${END_STYLE}\n" && false)
 	@node --version | grep "v2[456789]" > /dev/null 2>&1 || (printf "${FAIL_TEXT}Incorrect version: node - $$(node --version) (required >=v24)\n${END_STYLE}" && false)
-	@python3 --version | grep "3.11" > /dev/null 2>&1 || (printf "${FAIL_TEXT}Incorrect version: python3 - $$(python3 --version) (required 3.11)\n${END_STYLE}" && false)
+	@python --version | grep "3.11" > /dev/null 2>&1 || (printf "${FAIL_TEXT}Incorrect version: python3 - $$(python3 --version) (required 3.11)\n${END_STYLE}" && false)
 	@gcc --version > /dev/null 2>&1 || clang --version > /dev/null 2>&1 || (printf "${FAIL_TEXT}Missing required command: at least one of gcc or clang${END_STYLE}\n" && false)
 	@apptainer --version > /dev/null 2>&1 || (printf "${BOLD}Missing suggested command: apptainer${END_STYLE}\n")
 
@@ -218,6 +225,20 @@ reset-snapshot: preflight-checks
 # ---[ Includes for external components ]---
 include ${EXTERNAL_WRAPPERS}/*/include
 
+# Docker build for rottnest
+docker-build-rottnest:
+	@printf "${BOLD}Building docker image - This may take a while"
+	docker build -t rottnest:ubuntu2604 -f ./$(CONTAINER_PATH)/Dockerfile .
+	@printf "${BOLD}Finished Building Docker image"
+
+# Docker run for rottnest
+docker-run-rottnest:
+	@printf "${BOLD}Running Docker Image, Access Rottnest using localhost:5175"
+	docker run --network host -p 5175:5175 -p 8080:8080  -t rottnest:ubuntu2604
+
+
+
+# run: docker-run-rottnestjs docker-run-rottnestpy
 
 # Dummy rule to allow forcing w/out .PHONY
 # (which blocks implicit rules)
